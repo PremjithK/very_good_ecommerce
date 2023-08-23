@@ -23,7 +23,10 @@ class CustomerLoginPage extends StatelessWidget {
             children: [
               Text(
                 'Welcome, Customer.',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextFormField(
                 controller: _emailController,
