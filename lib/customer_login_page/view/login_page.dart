@@ -1,3 +1,4 @@
+import 'package:ecommerce/customer_sign_up/customer_sign_up.dart';
 import 'package:ecommerce/dashboard_page/view/dashboard_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -50,11 +51,7 @@ class CustomerLoginPage extends StatelessWidget {
                         email: _emailController.text,
                         password: _passwordController.text,
                       );
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DashboardPage(),
-                          ));
+                      Get.to(DashboardPage());
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -67,7 +64,7 @@ class CustomerLoginPage extends StatelessWidget {
                   child: const Text('Log In')),
               TextButton(
                   onPressed: () {
-                    Get.to(DashboardPage());
+                    Get.to(CustomerSignupPage());
                   },
                   child: Text('Create An Account'))
             ],

@@ -19,7 +19,7 @@ class CustomerSignupRepo {
         password: password,
       );
       await userRef.doc(userCredential.user!.uid).set({
-        'seller_id': auth.currentUser!.uid,
+        'user_id': auth.currentUser!.uid,
         'name': name,
         'email': email,
         'phone': phoneNo,

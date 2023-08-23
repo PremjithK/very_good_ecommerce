@@ -80,7 +80,7 @@ class CustomerSignupPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SellerLoginPage(),
+                        builder: (context) => CustomerLoginPage(),
                       ),
                     );
                   }
