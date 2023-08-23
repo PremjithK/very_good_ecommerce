@@ -1,9 +1,13 @@
-import 'package:ecommerce/login_page/view/login_page.dart';
-import 'package:ecommerce/sign_up_page/repo/signup_repo.dart';
+import 'package:ecommerce/custom_widgets/page_title.dart';
+import 'package:ecommerce/customer_login_page/view/login_page.dart';
+import 'package:ecommerce/customer_sign_up/repo/signup_repo.dart';
+import 'package:ecommerce/seller_login_page/view/seller_login_page.dart';
+import 'package:ecommerce/seller_sign_up_page/repo/signup_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class SignupPage extends StatelessWidget {
-  SignupPage({super.key});
+class CustomerSignupPage extends StatelessWidget {
+  CustomerSignupPage({super.key});
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
@@ -21,10 +25,7 @@ class SignupPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Signup As Seller',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-              ),
+              mainHeading('Welcome, New Customer'),
               TextFormField(
                 controller: _usernameController,
                 validator: (value) {
@@ -62,14 +63,14 @@ class SignupPage extends StatelessWidget {
                 decoration: InputDecoration(hintText: 'Password'),
               ),
               TextButton(
-                  onPressed: () => MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
+                  onPressed: () {
+                    Get.to(CustomerLoginPage());
+                  },
                   child: Text('Already Have An Account? Click Here')),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    await SignupRepo().createUser(
+                    await CustomerSignupRepo().createUser(
                       _usernameController.text,
                       _emailController.text,
                       _phoneController.text,
@@ -79,7 +80,7 @@ class SignupPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoginPage(),
+                        builder: (context) => SellerLoginPage(),
                       ),
                     );
                   }

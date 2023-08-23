@@ -1,11 +1,10 @@
-import 'package:ecommerce/add_product_page/view/add_product.dart';
 import 'package:ecommerce/dashboard_page/view/dashboard_page.dart';
-import 'package:ecommerce/sign_up_page/sign_up_page.dart';
+import 'package:ecommerce/seller_sign_up_page/sign_up_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class SellerLoginPage extends StatelessWidget {
+  SellerLoginPage({super.key});
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -71,7 +70,7 @@ class LoginPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SignupPage(),
+                        builder: (context) => SellerSignupPage(),
                       ),
                     );
                   },

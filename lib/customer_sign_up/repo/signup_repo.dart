@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class SignupRepo {
+class CustomerSignupRepo {
   Future<void> createUser(
     String name,
     String email,
@@ -11,14 +11,14 @@ class SignupRepo {
     BuildContext context,
   ) async {
     final auth = FirebaseAuth.instance;
-    final CollectionReference sellerRef =
-        FirebaseFirestore.instance.collection('SellerCollection');
+    final CollectionReference userRef =
+        FirebaseFirestore.instance.collection('CustomerCollection');
     try {
-      final sellerCredential = await auth.createUserWithEmailAndPassword(
+      final userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await sellerRef.doc(sellerCredential.user!.uid).set({
+      await userRef.doc(userCredential.user!.uid).set({
         'seller_id': auth.currentUser!.uid,
         'name': name,
         'email': email,
