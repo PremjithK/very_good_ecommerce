@@ -1,5 +1,5 @@
+import 'package:ecommerce/customer_dashboard_page/view/customer_dashboard_page.dart';
 import 'package:ecommerce/customer_sign_up/customer_sign_up.dart';
-import 'package:ecommerce/dashboard_page/view/dashboard_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,7 +54,7 @@ class CustomerLoginPage extends StatelessWidget {
                         email: _emailController.text,
                         password: _passwordController.text,
                       );
-                      Get.to(DashboardPage());
+                      Get.to(UserDashboardPage());
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

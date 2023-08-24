@@ -9,10 +9,10 @@ import 'package:uuid/uuid.dart';
 class AddProductRepo {
   final _auth = FirebaseAuth.instance;
   final CollectionReference _productRef =
-      FirebaseFirestore.instance.collection('ProductsCollection');
+      FirebaseFirestore.instance.collection('ProductCollection');
   Future<void> createImageTask(
     String productName,
-    String productSerialNo,
+    String productDetails,
     String productPrice,
     List<XFile> productImageList,
   ) async {
@@ -34,8 +34,9 @@ class AddProductRepo {
       }
 
       await _productRef.doc(productId).set({
+        'product_id': productId,
         'product_name': productName,
-        'product_serialno': productSerialNo,
+        'product_details': productDetails,
         'product_price': productPrice,
         'product_image': image,
         'seller_id': _auth.currentUser!.uid,

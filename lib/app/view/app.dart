@@ -1,6 +1,5 @@
 import 'package:ecommerce/l10n/l10n.dart';
 import 'package:ecommerce/launch_page/view/launch_page.dart';
-import 'package:ecommerce/seller_login_page/seller_login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

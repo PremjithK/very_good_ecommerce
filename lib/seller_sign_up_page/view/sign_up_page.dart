@@ -1,3 +1,5 @@
+import 'package:ecommerce/custom_widgets/page_title.dart';
+import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/seller_login_page/view/seller_login_page.dart';
 import 'package:ecommerce/seller_sign_up_page/repo/signup_repo.dart';
 import 'package:flutter/material.dart';
@@ -15,78 +17,89 @@ class SellerSignupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      
       body: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(30),
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Signup As Seller',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+              heightSpacer(1),
+              Column(
+                children: [
+                  mainHeading('Become A Seller'),
+                  heightSpacer(10),
+                  TextFormField(
+                    controller: _usernameController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter an Username';
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Merchant Name'),
+                  ),
+                  TextFormField(
+                    controller: _emailController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter an Email';
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Email'),
+                  ),
+                  TextFormField(
+                    controller: _phoneController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter a Phone Number';
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Phone No.'),
+                  ),
+                  TextFormField(
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter an Password';
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Password'),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Get.to(SellerLoginPage());
+                      },
+                      child: Text('Already Have An Account? Click Here')),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await SellerSignupRepo().createUser(
+                          _usernameController.text,
+                          _emailController.text,
+                          _phoneController.text,
+                          _passwordController.text,
+                          context,
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SellerLoginPage(),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('Create Account'),
+                  )
+                ],
               ),
-              TextFormField(
-                controller: _usernameController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Enter an Username';
-                  }
-                },
-                decoration: InputDecoration(hintText: 'Merchant Name'),
+              TextButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Go Back'),
               ),
-              TextFormField(
-                controller: _emailController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Enter an Email';
-                  }
-                },
-                decoration: InputDecoration(hintText: 'Email'),
-              ),
-              TextFormField(
-                controller: _phoneController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Enter a Phone Number';
-                  }
-                },
-                decoration: InputDecoration(hintText: 'Phone No.'),
-              ),
-              TextFormField(
-                controller: _passwordController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Enter an Password';
-                  }
-                },
-                decoration: InputDecoration(hintText: 'Password'),
-              ),
-              TextButton(
-                  onPressed: () {
-                    Get.to(SellerLoginPage());
-                  },
-                  child: Text('Already Have An Account? Click Here')),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await SellerSignupRepo().createUser(
-                      _usernameController.text,
-                      _emailController.text,
-                      _phoneController.text,
-                      _passwordController.text,
-                      context,
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SellerLoginPage(),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Create Account'),
-              )
             ],
           ),
         ),

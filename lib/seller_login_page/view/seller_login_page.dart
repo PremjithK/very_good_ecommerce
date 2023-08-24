@@ -1,7 +1,10 @@
+import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/dashboard_page/view/dashboard_page.dart';
+import 'package:ecommerce/launch_page/view/launch_page.dart';
 import 'package:ecommerce/seller_sign_up_page/sign_up_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SellerLoginPage extends StatelessWidget {
   SellerLoginPage({super.key});
@@ -18,63 +21,76 @@ class SellerLoginPage extends StatelessWidget {
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Seller Login',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-              ),
-              TextFormField(
-                controller: _emailController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Invalid Email';
-                  }
-                },
-                decoration: InputDecoration(hintText: 'Email'),
-              ),
-              TextFormField(
-                controller: _passwordController,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Invalid Password';
-                  }
-                },
-                decoration: InputDecoration(hintText: 'Password'),
-              ),
-              ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      final auth = FirebaseAuth.instance;
-                      final sellerRef = await auth.signInWithEmailAndPassword(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-                      Navigator.push(
+              heightSpacer(60),
+              Column(
+                children: [
+                  Text(
+                    'Seller Login',
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
+                  heightSpacer(20),
+                  TextFormField(
+                    controller: _emailController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Invalid Email';
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Email'),
+                  ),
+                  TextFormField(
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Invalid Password';
+                      }
+                    },
+                    decoration: InputDecoration(hintText: 'Password'),
+                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          final auth = FirebaseAuth.instance;
+                          final sellerRef =
+                              await auth.signInWithEmailAndPassword(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DashboardPage(),
+                              ));
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text('Invalid Email Or Password'),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text('Log In')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DashboardPage(),
-                          ));
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text('Invalid Email Or Password'),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text('Log In')),
-              TextButton(
+                            builder: (context) => SellerSignupPage(),
+                          ),
+                        );
+                      },
+                      child: Text('Create An Account')),
+                ],
+              ),
+              TextButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SellerSignupPage(),
-                      ),
-                    );
+                    Get.to(LaunchPage());
                   },
-                  child: Text('Create An Account'))
+                  icon: Icon(Icons.arrow_back),
+                  label: Text('Go Back'))
             ],
           ),
         ),
