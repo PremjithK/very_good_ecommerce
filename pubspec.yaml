@@ -33,9 +33,10 @@ flutter:
   uses-material-design: true
   generate: true
 
-fonts:
-  - family: Plus Jakarta
-    fonts:
-      - asset: fonts/PlusJakartaSans-Regular.ttf
-      - asset: fonts/PlusJakartaSans-Bold.ttf
-        weight: bold
+# Custom Assets And Fonts
+# Relative to pubspec.yaml OR root directory of project
+  fonts:
+    - family: PlusJakarta
+      fonts:
+        - asset: assets/fonts/PlusJakartaVariable.ttf
+        - asset: assets/fonts/PlusJakartaVariableItalic.ttf

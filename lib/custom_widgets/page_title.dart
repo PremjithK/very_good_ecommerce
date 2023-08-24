@@ -4,8 +4,9 @@ Widget mainHeading(String text) {
   return Text(
     text,
     style: TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 30,
+      fontFamily: 'PlusJakarta',
+      fontWeight: FontWeight.w700,
+      fontSize: 32,
     ),
   );
 }

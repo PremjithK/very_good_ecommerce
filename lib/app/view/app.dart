@@ -11,7 +11,7 @@ class App extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Plus Jakarta',
+        fontFamily: 'PlusJakarta',
         appBarTheme: const AppBarTheme(color: Colors.orangeAccent),
         colorScheme: ColorScheme.fromSwatch(
           accentColor: Colors.orangeAccent,

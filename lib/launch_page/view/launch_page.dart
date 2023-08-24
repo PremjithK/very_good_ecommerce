@@ -18,7 +18,7 @@ class LaunchPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            mainHeading('Welcome to E-Comm'),
+            mainHeading('My Ecommerce'),
             heightSpacer(20),
             dashboardItem(
               'Login as Customer',
