@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
+import 'package:ecommerce/product_details_page/view/product_details_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,7 @@ class UserDashboardPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            heightSpacer(60),
+            heightSpacer(80),
             mainHeading('Browse'),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
@@ -52,7 +53,9 @@ class UserDashboardPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) {},
+                                  builder: (context) => ProductDetailsPage(
+                                    productID: prod['product_id'] as String,
+                                  ),
                                 ),
                               );
                             },

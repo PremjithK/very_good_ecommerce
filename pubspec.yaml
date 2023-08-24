@@ -32,3 +32,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+fonts:
+  - family: Plus Jakarta
+    fonts:
+      - asset: fonts/PlusJakartaSans-Regular.ttf
+      - asset: fonts/PlusJakartaSans-Bold.ttf
+        weight: bold
