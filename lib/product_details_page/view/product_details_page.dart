@@ -12,6 +12,15 @@ class ProductDetailsPage extends StatelessWidget {
     // UI
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      bottomNavigationBar: Row(
+        children: [
+          TextButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back),
+              label: Text('Back')),
+          heightSpacer(10),
+        ],
+      ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
             .collection('ProductCollection')
@@ -19,49 +28,52 @@ class ProductDetailsPage extends StatelessWidget {
             .get(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          final product = snapshot.data!;
+          if (snapshot.hasData) {
+            final product = snapshot.data!;
+            return Padding(
+              padding: EdgeInsets.all(30),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        heightSpacer(60),
+                        Image.network(
+                          product['product_image'][0] as String,
+                          fit: BoxFit.cover,
+                          height: 300,
+                        ),
+                        heightSpacer(20),
+                        mainHeading(product['product_name'] as String),
+                        Text(
+                          'Rs. ${product['product_price'] as String}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 21),
+                        ),
+                        heightSpacer(15),
+                        Text(
+                          product['product_details'] as String,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        heightSpacer(20),
+                        ElevatedButton.icon(
+                            onPressed: () {
+                              
 
-          return Padding(
-            padding: EdgeInsets.all(30),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      heightSpacer(60),
-                      Image.network(
-                        product['product_image'][0] as String,
-                        fit: BoxFit.cover,
-                        height: 300,
-                      ),
-                      heightSpacer(20),
-                      mainHeading(product['product_name'] as String),
-                      Text(
-                        'Rs. ${product['product_price'] as String}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 21),
-                      ),
-                      heightSpacer(15),
-                      Text(
-                        product['product_details'] as String,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      heightSpacer(20),
-                    ],
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_back),
-                    label: Text('Go Back'),
-                  ),
-                ],
+                            },
+                            icon: Icon(Icons.add),
+                            label: Text('Add To Cart')),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
         },
       ),
     );

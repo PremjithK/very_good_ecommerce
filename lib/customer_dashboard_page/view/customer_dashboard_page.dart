@@ -25,10 +25,16 @@ class UserDashboardPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            heightSpacer(80),
-            mainHeading('Browse'),
+            heightSpacer(35),
+            IconButton(
+                onPressed: () {}, icon: Icon(Icons.shopping_cart_checkout)),
+            heightSpacer(20),
+            Center(
+              child: mainHeading('Browse'),
+            ),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance

@@ -1,3 +1,5 @@
+import 'package:ecommerce/custom_widgets/page_title.dart';
+import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_dashboard_page/view/customer_dashboard_page.dart';
 import 'package:ecommerce/customer_sign_up/customer_sign_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +16,16 @@ class CustomerLoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: Row(
+        children: [
+          TextButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back),
+              label: Text('Back')),
+          heightSpacer(10),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(30),
         child: Form(
@@ -21,13 +33,7 @@ class CustomerLoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Welcome, Customer.',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              mainHeading('Welcome, Customer.'),
               TextFormField(
                 controller: _emailController,
                 validator: (value) {
@@ -69,7 +75,7 @@ class CustomerLoginPage extends StatelessWidget {
                   onPressed: () {
                     Get.to(CustomerSignupPage());
                   },
-                  child: Text('Create An Account'))
+                  child: Text('Create An Account')),
             ],
           ),
         ),

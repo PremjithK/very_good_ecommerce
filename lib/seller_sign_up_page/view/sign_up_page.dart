@@ -18,7 +18,15 @@ class SellerSignupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      
+      bottomNavigationBar: Row(
+        children: [
+          TextButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back),
+              label: Text('Back')),
+          heightSpacer(10),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(30),
         child: Form(
@@ -95,11 +103,7 @@ class SellerSignupPage extends StatelessWidget {
                   )
                 ],
               ),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Go Back'),
-              ),
+              heightSpacer(10),
             ],
           ),
         ),
