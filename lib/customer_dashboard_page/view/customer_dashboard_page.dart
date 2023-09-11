@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce/cart_page/view/cart_page.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/product_details_page/view/product_details_page.dart';
@@ -30,7 +31,14 @@ class UserDashboardPage extends StatelessWidget {
           children: [
             heightSpacer(35),
             IconButton(
-                onPressed: () {}, icon: Icon(Icons.shopping_cart_checkout)),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartPage(),
+                      ));
+                },
+                icon: Icon(Icons.shopping_cart_checkout)),
             heightSpacer(20),
             Center(
               child: mainHeading('Browse'),

@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce/cart_page/repo/cart_repo.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   ProductDetailsPage({required this.productID, super.key});
   final String productID;
+
+  final user_id = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +64,13 @@ class ProductDetailsPage extends StatelessWidget {
                         heightSpacer(20),
                         ElevatedButton.icon(
                             onPressed: () {
-                              
-
+                              CartRepo().addToCart(user_id, productID);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Item Added To Cart'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
                             },
                             icon: Icon(Icons.add),
                             label: Text('Add To Cart')),
