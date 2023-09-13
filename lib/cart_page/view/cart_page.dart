@@ -107,10 +107,10 @@
 //   }
 // }
 
-import 'package:ecommerce/custom_widgets/spacer.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce/custom_widgets/spacer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -160,7 +160,7 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cart Page'),
+        title: const Text('Cart Page'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: getCartItems(),
@@ -173,47 +173,111 @@ class _CartPageState extends State<CartPage> {
             return Center(child: Text('No items in the cart.'));
           } else {
             final cartItems = snapshot.data;
-            return ListView.builder(
-              itemCount: cartItems!.length,
-              itemBuilder: (context, index) {
-                final cartItem = cartItems[index];
-                return FutureBuilder<DocumentSnapshot>(
-                  future: getProductDetails(cartItem['product_id'] as String),
-                  builder: (context, productSnapshot) {
-                    if (productSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (productSnapshot.hasError) {
-                      return Text('Error: ${productSnapshot.error.toString()}');
-                    } else if (!productSnapshot.hasData ||
-                        !productSnapshot.data!.exists) {
-                      return Text('Product not found');
-                    } else {
-                      final productData = productSnapshot.data!;
-                      return SizedBox(
-                        height: 150,
-                        child: ListTile(
-                          leading: CircleAvatar(),
-                          title: Text(productData['product_name'] as String),
-                          subtitle:
-                              Text(productData['product_price'] as String),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InkWell(onTap: () {}, child: Icon((Icons.add))),
-                              widthSpacer(10),
-                              Text('${cartItem['quantiy']}'),
-                              widthSpacer(10),
-                              InkWell(onTap: () {}, child: Icon(Icons.remove)),
-                            ],
-                          ),
-                          // Add more product details as needed
-                        ),
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
+                      child: Row(
+                        children: [
+                          Text('GRAND TOTAL:'),
+                          // Text(grandTotal.toString()),
+                        ],
+                      )),
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: cartItems!.length,
+                    itemBuilder: (context, index) {
+                      final cartItem = cartItems[index];
+                      return FutureBuilder<DocumentSnapshot>(
+                        future:
+                            getProductDetails(cartItem['product_id'] as String),
+                        builder: (context, productSnapshot) {
+                          if (productSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (productSnapshot.hasError) {
+                            return Text(
+                                'Error: ${productSnapshot.error.toString()}');
+                          } else if (!productSnapshot.hasData ||
+                              !productSnapshot.data!.exists) {
+                            return Text('Product not found');
+                          } else {
+                            final productData = productSnapshot.data!;
+
+                            int quantity =
+                                int.parse(cartItem['quantiy'].toString());
+                            
+                            return SizedBox(
+                              height: 100,
+                              child: ListTile(
+                                leading: CircleAvatar(),
+                                title:
+                                    Text(productData['product_name'] as String),
+                                subtitle: Text(
+                                    '₹.${productData['product_price'] as String}'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            FirebaseFirestore.instance
+                                                .collection('CartCollection')
+                                                .doc(cartItem['cart_id']
+                                                    .toString())
+                                                .update({
+                                              'quantiy': '${quantity + 1}'
+                                            });
+                                          });
+                                        },
+                                        child: Icon((Icons.add))),
+                                    widthSpacer(10),
+                                    Text('${cartItem['quantiy']}'),
+                                    widthSpacer(10),
+                                    if (quantity > 1)
+                                      InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              FirebaseFirestore.instance
+                                                  .collection('CartCollection')
+                                                  .doc(cartItem['cart_id']
+                                                      .toString())
+                                                  .update({
+                                                'quantiy': '${quantity - 1}'
+                                              });
+                                            });
+                                          },
+                                          child: Icon(Icons.remove))
+                                    else
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            FirebaseFirestore.instance
+                                                .collection('CartCollection')
+                                                .doc(cartItem['cart_id']
+                                                    .toString())
+                                                .delete();
+                                          });
+                                        },
+                                        child: Icon(Icons.delete_forever),
+                                      ),
+                                  ],
+                                ),
+                                // Add more product details as needed
+                              ),
+                            );
+                          }
+                        },
                       );
-                    }
-                  },
-                );
-              },
+                    },
+                  ),
+                ],
+              ),
             );
           }
         },
