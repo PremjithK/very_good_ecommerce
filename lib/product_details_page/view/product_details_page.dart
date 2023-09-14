@@ -81,7 +81,12 @@ class ProductDetailsPage extends StatelessWidget {
               ),
             );
           } else {
-            return CircularProgressIndicator();
+            return Center(
+                child: Column(
+              children: [
+                CircularProgressIndicator(),
+              ],
+            ));
           }
         },
       ),

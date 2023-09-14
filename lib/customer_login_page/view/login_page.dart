@@ -57,6 +57,7 @@ class CustomerLoginPage extends StatelessWidget {
                     try {
                       final auth = FirebaseAuth.instance;
                       final userRef = await auth.signInWithEmailAndPassword(
+                      
                         email: _emailController.text,
                         password: _passwordController.text,
                       );

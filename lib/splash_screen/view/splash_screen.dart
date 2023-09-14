@@ -13,7 +13,7 @@ class _SplashPageState extends State<SplashPage> {
   void changeScreen() {
     Future.delayed(
       Duration(seconds: 3),
-      () {
+      () { 
         Navigator.push(
             context,
             MaterialPageRoute(
