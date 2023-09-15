@@ -113,7 +113,6 @@ import 'package:ecommerce/checkout_page/view/checkout_page.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class CartPage extends StatefulWidget {
   @override
