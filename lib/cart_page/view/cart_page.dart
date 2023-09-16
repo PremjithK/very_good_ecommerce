@@ -1,112 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:ecommerce/custom_widgets/page_title.dart';
-// import 'package:ecommerce/custom_widgets/spacer.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-
-// class CartPage extends StatefulWidget {
-//   CartPage({super.key});
-
-//   final auth = FirebaseAuth.instance;
-//   final List cartItemsList = [];
-
-//   @override
-//   State<CartPage> createState() => _CartPageState();
-// }
-
-// class _CartPageState extends State<CartPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Padding(
-//         padding: const EdgeInsets.all(30),
-//         child: Column(
-//           children: [
-//             heightSpacer(40),
-//             mainHeading('My Cart'),
-//             heightSpacer(30),
-//             StreamBuilder<QuerySnapshot>(
-//               stream: getCartItemsStream(),
-//               builder: (BuildContext context, snapshot) {
-//                 if (snapshot.hasData) {
-//                   final cartItemsList = snapshot.data!.docs;
-
-//                   print(cartItemsList.length);
-//                   print(cartItemsList[1]);
-//                   //
-//                   return ListView.builder(
-//                     itemCount: cartItemsList.length,
-//                     itemBuilder: (BuildContext context, int index) {
-//                       //print(products[index]);
-
-//                       final cartItem = cartItemsList[index];
-//                       if (cartItem != null) {
-//                         print("${cartItem} **********************************");
-//                         return FutureBuilder(
-//                           future: getProductByID(cartItem.id),
-//                           builder: (context, productSnapshot) {
-//                             if (productSnapshot.hasData) {
-//                               final productData = productSnapshot.data!;
-
-//                               return ListTile(
-//                                 title:
-//                                     Text(productData['product_name'] as String),
-//                               );
-//                             } else {
-//                               return Center(child: CircularProgressIndicator());
-//                             }
-//                           },
-//                         );
-//                       } else {
-//                         print('No Cart Item---------------------');
-//                         return CircularProgressIndicator();
-//                       }
-//                     },
-//                   );
-//                 } else {
-//                   // try {} on FirebaseFirestoreException
-//                   // catch (e) {
-//                   //   ScaffoldMessenger.of(context)
-//                   //       .showSnackBar(SnackBar(content: Text(e.toString())));
-//                   // }
-
-//                   return ListTile(
-//                     title: Center(child: CircularProgressIndicator()),
-//                   );
-//                 }
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// Future<DocumentSnapshot> getProductByID(String productID) async {
-//   final productDoc = await FirebaseFirestore.instance
-//       .collection('ProductCollection')
-//       .doc(productID)
-//       .get();
-//   return productDoc;
-// }
-
-// Stream<QuerySnapshot> getCartItemsStream() async* {
-//   final user = FirebaseAuth.instance.currentUser;
-//   final auth = FirebaseAuth.instance;
-
-//   if (user != null) {
-//     final cartItems = FirebaseFirestore.instance
-//         .collection('CartCollection')
-//         .where('user_id', isEqualTo: auth.currentUser!.uid)
-//         .snapshots();
-
-//     yield* cartItems;
-//   } else {
-//     print('No user-------------------------');
-//   }
-// }
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/cart_page/repo/cart_repo.dart';
 import 'package:ecommerce/checkout_page/view/checkout_page.dart';
@@ -143,7 +34,7 @@ class _CartPageState extends State<CartPage> {
     initializeCartItems();
   }
 
-  void initializeCartItems() async {
+  Future<void> initializeCartItems() async {
     final cartData = await getCartItems();
     setState(() {
       cartItemList = cartData;
@@ -333,13 +224,9 @@ class _CartPageState extends State<CartPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          //! Grand Total (Need to modify)
-                          // Text('GRAND TOTAL: $grandTotal'),
-
                           TextButton.icon(
                               onPressed: () {
-                                // Creating order table
-
+                                //? Placing Order as pending status
                                 OrderRepo().placeOrder(cartIDSet.toList());
 
                                 Navigator.push(

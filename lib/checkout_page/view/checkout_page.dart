@@ -51,7 +51,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             shape: StadiumBorder()),
                         onPressed: () {
                           //? Proceed To Payment Page
-                          //? Create Order Table and Fill In
+                          //? Create Order Table and Set Order Status As Pending
 
                           showDialog(
                             context: context,
@@ -94,7 +94,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     children: [
                       ListView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: widget.productsToBuy.length,
                         itemBuilder: (BuildContext context, int index) {
                           final listItem = widget.productsToBuy[index];
