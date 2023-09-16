@@ -115,6 +115,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CartPage extends StatefulWidget {
+  const CartPage({super.key});
+
   @override
   _CartPageState createState() => _CartPageState();
 }
@@ -229,7 +231,6 @@ class _CartPageState extends State<CartPage> {
                             final productName = productData['product_name'];
                             final cartItemID = cartItem['cart_id'].toString();
                             cartIDSet.add(cartItemID);
-                            print(cartIDSet);
 
                             //? Check if the product is already in productsToBuy
                             var existingProductIndex = -1;
@@ -250,7 +251,7 @@ class _CartPageState extends State<CartPage> {
                               final oneProduct = {
                                 'id': productId,
                                 'name': productName,
-                                'price': '${subtotal * quantity}',
+                                'price': '${productData['product_price']}',
                                 'quantity': '${cartItem['quantity']}',
                               };
                               productsToBuyList.add(oneProduct);
@@ -259,7 +260,7 @@ class _CartPageState extends State<CartPage> {
                             return SizedBox(
                               height: 100,
                               child: ListTile(
-                                contentPadding: EdgeInsets.symmetric(
+                                contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 10),
                                 leading: CircleAvatar(),
                                 title:

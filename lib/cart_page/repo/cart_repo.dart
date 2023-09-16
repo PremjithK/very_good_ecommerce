@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 
 class CartRepo {
-  final _auth = FirebaseAuth.instance;
   final CollectionReference _cartRef =
       FirebaseFirestore.instance.collection('CartCollection');
+  //
   Future<void> addToCart(
     String userID,
     String productID,
   ) async {
-    final uuid = Uuid();
+    const uuid = Uuid();
     final cartID = uuid.v4();
     const quantity = 1;
 
@@ -28,23 +27,25 @@ class CartRepo {
 }
 
 class OrderRepo {
-  final _auth = FirebaseAuth.instance;
   final CollectionReference _orderRef =
       FirebaseFirestore.instance.collection('OrderCollection');
 
   //
   Future<void> placeOrder(List<String> cartIDs) async {
-    final uuid = Uuid();
+    const uuid = Uuid();
     final orderID = uuid.v4();
 
+    //
+    final orderData = {
+      'order_id': orderID,
+      'status': 'pending',
+      'item_ids': cartIDs,
+    };
+
     try {
-      await _orderRef.doc(orderID).set({
-        'order_id': orderID,
-        'status': 'pending',
-        'item_ids': cartIDs,
-      });
+      await _orderRef.doc(orderID).set(orderData);
     } catch (e) {
-      throw Exception('Failed to add to cart');
+      throw Exception('Failed to Make Order Collection');
     }
   }
 }

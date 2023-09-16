@@ -22,86 +22,105 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout From Cart'),
+        title: const Text('Checkout From Cart'),
         backgroundColor: Colors.pink.shade300,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('GRAND TOTAL'),
-                      mainHeading('Rs. ${widget.grandTotal}'),
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 10),
-                          shape: StadiumBorder()),
-                      onPressed: () {
-                        //? Proceed To Payment Page
-                        //? Create Order Table and Fill In
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('GRAND TOTAL'),
+                        mainHeading('₹ ${widget.grandTotal}'),
+                      ],
+                    ),
+                    ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 10),
+                            shape: StadiumBorder()),
+                        onPressed: () {
+                          //? Proceed To Payment Page
+                          //? Create Order Table and Fill In
 
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                                titlePadding: EdgeInsets.only(bottom: 200),
-                                icon: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text('Payment Method'),
-                                    ElevatedButton(
-                                        onPressed: () {}, child: Text('COD')),
-                                    ElevatedButton(
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  icon: Column(
+                                children: [
+                                  mainHeading('Payment Method'),
+                                  heightSpacer(10),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: StadiumBorder(),
+                                        ),
+                                        onPressed: () {},
+                                        child: Text('Cash On Delivery')),
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            shape: StadiumBorder(),
+                                            backgroundColor: Colors.indigo),
                                         onPressed: () {},
                                         child: Text('Razorpay')),
-                                  ],
-                                ));
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.payment),
-                      label: Text('Pay'))
-                ],
-              ),
-              heightSpacer(20),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: widget.productsToBuy.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final listItem = widget.productsToBuy[index];
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                          ),
-                          title: Text(listItem['name'].toString()),
-                          trailing: Text(
-                            'x ${listItem['quantity']}',
-                          ),
-                        );
-                      },
-                    ),
+                                  ),
+                                ],
+                              ));
+                            },
+                          );
+                        },
+                        icon: Icon(Icons.payment),
+                        label: Text('Pay'))
                   ],
                 ),
-              ),
-              heightSpacer(20),
-            ],
+                heightSpacer(30),
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: widget.productsToBuy.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final listItem = widget.productsToBuy[index];
+                          final subTotal =
+                              double.parse(listItem['price'].toString()) *
+                                  double.parse(listItem['quantity'].toString());
+
+                          return ListTile(
+                            contentPadding: EdgeInsets.all(0),
+                            leading: CircleAvatar(
+                              radius: 30,
+                            ),
+                            title: Text(listItem['name'].toString()),
+                            subtitle: Text(subTotal.toString()),
+                            trailing: Text(
+                              'x ${listItem['quantity']}',
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                heightSpacer(20),
+              ],
+            ),
           ),
         ),
       ),
