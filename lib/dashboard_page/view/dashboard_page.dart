@@ -1,4 +1,5 @@
 import 'package:ecommerce/add_product_page/view/add_product.dart';
+import 'package:ecommerce/confirmed_orders/view/confirmed_orders.dart';
 import 'package:ecommerce/custom_widgets/dashboard_option.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
@@ -6,7 +7,6 @@ import 'package:ecommerce/launch_page/view/launch_page.dart';
 import 'package:ecommerce/view_products_page/view/view_products_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class DashboardPage extends StatelessWidget {
   DashboardPage({super.key});
@@ -34,29 +34,33 @@ class DashboardPage extends StatelessWidget {
                   Colors.orange,
                   ViewProductsPage(),
                 ),
+                dashboardItem(
+                  'View Orders',
+                  Icons.list,
+                  Colors.teal,
+                  ConfirmedOrders(),
+                ),
 
                 //Logout Option
                 ListTile(
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                   onTap: () async {
                     await _auth.signOut();
-                    Navigator.pushReplacement(
+                    await Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => LaunchPage(),
                         ));
                   },
-                  leading: CircleAvatar(
+                  leading: const CircleAvatar(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                     child: Icon(Icons.arrow_back),
                   ),
-                  title: Container(
-                    child: Text(
-                      'Log Out',
-                      style: TextStyle(fontSize: 20),
-                    ),
+                  title: Text(
+                    'Log Out',
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
               ],

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_dashboard_page/view/customer_dashboard_page.dart';
@@ -12,6 +13,9 @@ class CustomerLoginPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  //
+  final userType = 'customer';
 
   @override
   Widget build(BuildContext context) {
@@ -54,19 +58,32 @@ class CustomerLoginPage extends StatelessWidget {
               ),
               ElevatedButton(
                   onPressed: () async {
-                    try {
-                      final auth = FirebaseAuth.instance;
-                      final userRef = await auth.signInWithEmailAndPassword(
-                      
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-                      Get.to(UserDashboardPage());
-                    } catch (e) {
+                    final customerRef = FirebaseFirestore.instance
+                        .collection('CustomerCollection')
+                        .where('email', isEqualTo: _emailController.text)
+                        .get();
+                    final result = await customerRef;
+                    if (result.docs.isNotEmpty) {
+                      try {
+                        final auth = FirebaseAuth.instance;
+                        final userRef = await auth.signInWithEmailAndPassword(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
+                        Get.to(UserDashboardPage());
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text('Invalid Email Or Password'),
+                          ),
+                        );
+                      }
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.red,
-                          content: Text('Invalid Email Or Password'),
+                          content: Text('No Such User Exists'),
                         ),
                       );
                     }

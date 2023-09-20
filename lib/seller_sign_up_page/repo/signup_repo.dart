@@ -24,6 +24,7 @@ class SellerSignupRepo {
         'email': email,
         'phone': phoneNo,
         'password': password,
+        'type': 'seller',
       });
     } on FirebaseAuthException catch (e) {
       throw Exception('Failed To Sign Up');

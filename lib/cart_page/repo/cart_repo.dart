@@ -30,7 +30,7 @@ class OrderRepo {
   final CollectionReference _orderRef =
       FirebaseFirestore.instance.collection('OrderCollection');
 
-  //
+  // Placing Order Method
   Future<void> placeOrder(List<String> cartIDs) async {
     const uuid = Uuid();
     final orderID = uuid.v4();
@@ -38,8 +38,8 @@ class OrderRepo {
     //
     final orderData = {
       'order_id': orderID,
-      'status': 'pending',
       'item_ids': cartIDs,
+      'status': 'pending',
     };
 
     try {

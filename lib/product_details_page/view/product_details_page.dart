@@ -45,7 +45,7 @@ class ProductDetailsPage extends StatelessWidget {
                         heightSpacer(60),
                         Image.network(
                           product['product_image'][0] as String,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
                           height: 300,
                         ),
                         heightSpacer(20),

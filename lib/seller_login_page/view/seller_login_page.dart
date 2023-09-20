@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/dashboard_page/view/dashboard_page.dart';
 import 'package:ecommerce/launch_page/view/launch_page.dart';
@@ -51,23 +52,38 @@ class SellerLoginPage extends StatelessWidget {
                   ),
                   ElevatedButton(
                       onPressed: () async {
-                        try {
-                          final auth = FirebaseAuth.instance;
-                          final sellerRef =
-                              await auth.signInWithEmailAndPassword(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          );
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DashboardPage(),
-                              ));
-                        } catch (e) {
+                        //
+                        final customerRef = FirebaseFirestore.instance
+                            .collection('SellerCollection')
+                            .where('email', isEqualTo: _emailController.text)
+                            .get();
+                        final result = await customerRef;
+                        if (result.docs.isNotEmpty) {
+                          try {
+                            final auth = FirebaseAuth.instance;
+                            final sellerRef =
+                                await auth.signInWithEmailAndPassword(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            );
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DashboardPage(),
+                                ));
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text('Invalid Email Or Password'),
+                              ),
+                            );
+                          }
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               backgroundColor: Colors.red,
-                              content: Text('Invalid Email Or Password'),
+                              content: Text('No Such Seller Exists'),
                             ),
                           );
                         }

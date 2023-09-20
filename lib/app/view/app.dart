@@ -1,6 +1,6 @@
 import 'package:ecommerce/l10n/l10n.dart';
 import 'package:ecommerce/launch_page/view/launch_page.dart';
-import 'package:ecommerce/splash_screen/view/splash_screen.dart';
+//import 'package:ecommerce/splash_screen/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,7 +20,7 @@ class App extends StatelessWidget {
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: SplashPage(),
+      home: LaunchPage(),
     );
   }
 }

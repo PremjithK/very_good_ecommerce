@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
+import 'package:ecommerce/customer_dashboard_page/customer_dashboard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({
+  CheckoutPage({
     required this.productsToBuy,
     required this.grandTotal,
     required this.cartIDs,
@@ -12,14 +17,125 @@ class CheckoutPage extends StatefulWidget {
   final double grandTotal;
   final List<Map<String, dynamic>> productsToBuy;
   final List<String> cartIDs;
-  //
+
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+  late Razorpay _razorpay;
+  final _auth = FirebaseAuth.instance;
+  final _cartRef = FirebaseFirestore.instance.collection('CartCollection');
+
+  @override
+  void initState() {
+    super.initState();
+
+    _razorpay = Razorpay();
+
+    _razorpay
+      ..on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess)
+      ..on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError)
+      ..on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  //* Payment success event
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    Fluttertoast.showToast(
+      backgroundColor: Colors.green.shade700,
+      msg: 'Payment Successful: ${response.paymentId}',
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  
+    //? Clearing the cart and Updating Order Statuses
+    updateOrderStatus(_auth.currentUser!.uid, widget.cartIDs);
+    //? Route back to user homepage
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserDashboardPage(),
+      ),
+    );
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    Fluttertoast.showToast(
+      backgroundColor: Colors.red,
+      msg: 'Error: ${response.code}',
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    Fluttertoast.showToast(
+      msg: 'External Wallet: ${response.walletName}',
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _razorpay.clear();
+  }
+
+  Future<void> payment(double amount) async {
+    final options = {
+      'key': 'rzp_test_sU9tdJwIpbnAHy',
+      'key_secret': 'dekVTnDDsu0sDonSh3y1DbWd',
+      'amount': amount * 100,
+      'name': 'E-Commerce',
+      'description': 'E commerce Cart Total',
+      'retry': {
+        'enabled': true,
+        'max_count': 1,
+      },
+      'send_sms_hash': true,
+      'prefil': {
+        'contact': '909090',
+        'email': 'ecommerce@gmail.com',
+        'external': {
+          'wallets': ['Paytm', 'Gpay']
+        }
+      }
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  //? method for Updating Order Status And Clearing Cart
+  Future<void> updateOrderStatus(
+    String userId,
+    List<String> cartIDs,
+  ) async {
+    print('USER ID:  $userId <<<<<<<<<<<<<<<');
+    final orderRef = await FirebaseFirestore.instance
+        .collection('OrderCollection')
+        .where('item_ids', arrayContainsAny: cartIDs)
+        .get();
+    // Updating Order Status to confirmed
+    for (final doc in orderRef.docs) {
+      await doc.reference.update({
+        'status': 'confirmed',
+        
+      });
+    }
+    // Clearing the user's cart
+    final querySnapshot =
+        await _cartRef.where('user_id', isEqualTo: userId).get();
+    for (final item in querySnapshot.docs) {
+      await item.reference.delete();
+    }
+  }
+
+  // BUILD METHOD
   @override
   Widget build(BuildContext context) {
+    //
     return Scaffold(
       appBar: AppBar(
         title: const Text('Checkout From Cart'),
@@ -47,7 +163,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 10),
+                              horizontal: 30,
+                              vertical: 10,
+                            ),
                             shape: StadiumBorder()),
                         onPressed: () {
                           //? Proceed To Payment Page
@@ -65,7 +183,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     width: double.infinity,
                                     child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          shape: StadiumBorder(),
+                                          shape: const StadiumBorder(),
                                         ),
                                         onPressed: () {},
                                         child: Text('Cash On Delivery')),
@@ -74,9 +192,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     width: double.infinity,
                                     child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                            shape: StadiumBorder(),
-                                            backgroundColor: Colors.indigo),
-                                        onPressed: () {},
+                                          shape: StadiumBorder(),
+                                          backgroundColor: Colors.indigo,
+                                        ),
+                                        onPressed: () {
+                                          //? MAKING THE PAYMENT
+                                          payment(widget.grandTotal);
+                                        },
                                         child: Text('Razorpay')),
                                   ),
                                 ],

@@ -31,7 +31,7 @@ class AddProductPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: EdgeInsets.all(30),
+        padding: const EdgeInsets.all(30),
         child: Form(
           key: _formKey,
           child: Column(
