@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 class ConfirmedOrders extends StatefulWidget {
   ConfirmedOrders({super.key});
 
-  void getConfirmedOrders() async {
+  Future<void> getConfirmedOrders() async {
     final auth = FirebaseAuth.instance;
     final ordersRef = await FirebaseFirestore.instance
         .collection('OrderCollection')
         .where('status', isEqualTo: 'confirmed')
         .get();
 
-    for (var order in ordersRef.docs) {
-      
+    for (final order in ordersRef.docs) {
+      print(order);
     }
   }
   // 1. Confirmed orders

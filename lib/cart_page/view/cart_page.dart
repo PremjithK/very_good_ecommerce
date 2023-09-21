@@ -4,6 +4,7 @@ import 'package:ecommerce/checkout_page/view/checkout_page.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -26,6 +27,8 @@ class _CartPageState extends State<CartPage> {
 
   Set<String> cartIDSet = {};
   List<String> cartIDList = [];
+  List<Map<String, dynamic>> fullCartItems = [];
+  late Future<String> orderID;
 
   @override
   void initState() {
@@ -110,7 +113,7 @@ class _CartPageState extends State<CartPage> {
                             final productData = productSnapshot.data!;
 
                             final quantity =
-                                double.parse(cartItem['quantity'].toString());
+                                int.parse(cartItem['quantity'].toString());
 
                             final subtotal = quantity *
                                 double.parse(
@@ -147,6 +150,13 @@ class _CartPageState extends State<CartPage> {
                               };
                               productsToBuyList.add(oneProduct);
                             }
+
+                            //
+                            fullCartItems.add({
+                              'product_id': productData['product_id'],
+                              'quantity': quantity,
+                              'subtotal': subtotal,
+                            });
 
                             return SizedBox(
                               height: 100,
@@ -225,20 +235,33 @@ class _CartPageState extends State<CartPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton.icon(
-                              onPressed: () {
+                              onPressed: () async {
                                 //? Placing Order as pending status
-                                OrderRepo().placeOrder(cartIDSet.toList());
+                                orderID = OrderRepo()
+                                    .placeOrder(userID, fullCartItems);
+                                final s = await orderID;
 
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CheckoutPage(
-                                        productsToBuy:
-                                            productsToBuyList.toSet().toList(),
-                                        grandTotal: grandTotal,
-                                        cartIDs: cartIDSet.toList(),
-                                      ),
-                                    ));
+                                // await Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (context) => CheckoutPage(
+                                //         productsToBuy:
+                                //             productsToBuyList.toSet().toList(),
+                                //         grandTotal: grandTotal,
+                                //         orderID: s,
+                                //         fullCartItems: fullCartItems,
+                                //       ),
+                                //     ));
+
+                                await Get.to(
+                                  CheckoutPage(
+                                    productsToBuy:
+                                        productsToBuyList.toSet().toList(),
+                                    grandTotal: grandTotal,
+                                    orderID: s,
+                                    fullCartItems: fullCartItems,
+                                  ),
+                                );
                               },
                               icon: const Icon(Icons.arrow_forward),
                               label: const Text('Checkout'))

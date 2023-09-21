@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce/cart_page/repo/cart_repo.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_dashboard_page/customer_dashboard.dart';
@@ -11,12 +12,15 @@ class CheckoutPage extends StatefulWidget {
   CheckoutPage({
     required this.productsToBuy,
     required this.grandTotal,
-    required this.cartIDs,
+    required this.orderID,
+    required this.fullCartItems,
     super.key,
   });
+
   final double grandTotal;
   final List<Map<String, dynamic>> productsToBuy;
-  final List<String> cartIDs;
+  final String orderID;
+  List<Map<String, dynamic>> fullCartItems;
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -26,6 +30,29 @@ class _CheckoutPageState extends State<CheckoutPage> {
   late Razorpay _razorpay;
   final _auth = FirebaseAuth.instance;
   final _cartRef = FirebaseFirestore.instance.collection('CartCollection');
+  final _orderRef = FirebaseFirestore.instance.collection('OrderCollection');
+
+  Future<void> updateProductQuantitiesAndSubtotal(
+      String orderId, List<Map<String, dynamic>> cartItems) async {
+    try {
+      for (final cartItem in cartItems) {
+        print('>>>>>>>>>${cartItem['quantity']}<<<<<<<<');
+        final productId = cartItem['product_id'] as String;
+        final quantity = cartItem['quantity'];
+        final subtotal = cartItem['subtotal'];
+
+        await _orderRef.doc(orderId).update({
+          'quantity.$productId': quantity,
+          'subtotal.$productId': subtotal,
+          'product_ids.$productId': productId,
+          'status': 'confirmed',
+        });
+        // await _orderRef.doc(orderId).delete();
+      }
+    } catch (e) {
+      throw Exception('Failed to update product quantities and subtotal');
+    }
+  }
 
   @override
   void initState() {
@@ -46,9 +73,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
       msg: 'Payment Successful: ${response.paymentId}',
       toastLength: Toast.LENGTH_SHORT,
     );
-  
+
     //? Clearing the cart and Updating Order Statuses
-    updateOrderStatus(_auth.currentUser!.uid, widget.cartIDs);
+    //updateOrderStatus(_auth.currentUser!.uid, widget.cartIDs);
+
+    // print('>>>>>>>>>>>>>>>>>>$widget.orderID');
+    // updateProductQuantitiesAndSubtotal(
+    //   widget.orderID,
+    //   widget.fullCartItems,
+    // );
+
+    updateProductQuantitiesAndSubtotal(
+      widget.orderID,
+      widget.fullCartItems,
+    );
+
     //? Route back to user homepage
     Navigator.push(
       context,
@@ -108,29 +147,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   //? method for Updating Order Status And Clearing Cart
-  Future<void> updateOrderStatus(
-    String userId,
-    List<String> cartIDs,
-  ) async {
-    print('USER ID:  $userId <<<<<<<<<<<<<<<');
-    final orderRef = await FirebaseFirestore.instance
-        .collection('OrderCollection')
-        .where('item_ids', arrayContainsAny: cartIDs)
-        .get();
-    // Updating Order Status to confirmed
-    for (final doc in orderRef.docs) {
-      await doc.reference.update({
-        'status': 'confirmed',
-        
-      });
-    }
-    // Clearing the user's cart
-    final querySnapshot =
-        await _cartRef.where('user_id', isEqualTo: userId).get();
-    for (final item in querySnapshot.docs) {
-      await item.reference.delete();
-    }
-  }
+  // Future<void> updateOrderStatus(
+  //   String userId,
+  //   List<String> cartIDs,
+  // ) async {
+  //   print('USER ID:  $userId <<<<<<<<<<<<<<<');
+  //   final orderRef = await FirebaseFirestore.instance
+  //       .collection('OrderCollection')
+  //       .where('item_ids', arrayContainsAny: cartIDs)
+  //       .get();
+  //   // Updating Order Status to confirmed
+  //   for (final doc in orderRef.docs) {
+  //     await doc.reference.update({
+  //       'status': 'confirmed',
+  //     });
+  //   }
+  //   // Clearing the user's cart
+  //   final querySnapshot =
+  //       await _cartRef.where('user_id', isEqualTo: userId).get();
+  //   for (final item in querySnapshot.docs) {
+  //     await item.reference.delete();
+  //   }
+  // }
 
   // BUILD METHOD
   @override
@@ -198,6 +236,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         onPressed: () {
                                           //? MAKING THE PAYMENT
                                           payment(widget.grandTotal);
+                                          // print(
+                                          //     '>>>>>>>>>>>>>>>>>>$widget.orderID');
                                         },
                                         child: Text('Razorpay')),
                                   ),
