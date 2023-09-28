@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce/cart_page/repo/cart_repo.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_dashboard_page/customer_dashboard.dart';
@@ -28,7 +27,7 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   late Razorpay _razorpay;
-  final _auth = FirebaseAuth.instance;
+
   final _cartRef = FirebaseFirestore.instance.collection('CartCollection');
   final _orderRef = FirebaseFirestore.instance.collection('OrderCollection');
 
@@ -47,7 +46,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
           'product_ids.$productId': productId,
           'status': 'confirmed',
         });
-        // await _orderRef.doc(orderId).delete();
+
+        final snapshot = await _orderRef.doc(orderId).get();
+
+        if (snapshot.exists) {
+          final user = snapshot['user_id'] as String;
+          //print(user);
+          final cartDoc =
+              await _cartRef.where('user_id', isEqualTo: user).get();
+          for (final doc in cartDoc.docs) {
+            await doc.reference.delete();
+          }
+        }
       }
     } catch (e) {
       throw Exception('Failed to update product quantities and subtotal');
@@ -74,7 +84,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       toastLength: Toast.LENGTH_SHORT,
     );
 
-    //? Clearing the cart and Updating Order Statuses
+    //? Updating Order Statuses
     //updateOrderStatus(_auth.currentUser!.uid, widget.cartIDs);
 
     // print('>>>>>>>>>>>>>>>>>>$widget.orderID');
@@ -87,6 +97,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
       widget.orderID,
       widget.fullCartItems,
     );
+
+    //? Clearing Cart
 
     //? Route back to user homepage
     Navigator.push(

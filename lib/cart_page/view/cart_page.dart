@@ -10,12 +10,12 @@ class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
   @override
-  _CartPageState createState() => _CartPageState();
+  CartPageState createState() => CartPageState();
 }
 
-class _CartPageState extends State<CartPage> {
+class CartPageState extends State<CartPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  List<Map<String, dynamic>> cartItemList = []; // Initialize as an empty list
+  List<Map<String, dynamic>> cartItemList = [];
 
   //Current user's total bill
   double grandTotal = 0;
@@ -29,6 +29,7 @@ class _CartPageState extends State<CartPage> {
   List<String> cartIDList = [];
   List<Map<String, dynamic>> fullCartItems = [];
   late Future<String> orderID;
+  late List<Map<String, dynamic>> cartData = [];
 
   @override
   void initState() {
@@ -53,9 +54,9 @@ class _CartPageState extends State<CartPage> {
           .where('user_id', isEqualTo: userId)
           .get();
 
-      List<Map<String, dynamic>> cartData = [];
+      cartData = [];
 
-      for (var doc in cartItems.docs) {
+      for (final doc in cartItems.docs) {
         cartData.add(doc.data());
       }
 
@@ -96,28 +97,21 @@ class _CartPageState extends State<CartPage> {
                       final cartItem = cartItems[index];
                       grandTotal = 0;
                       return FutureBuilder<DocumentSnapshot>(
-                        future:
-                            getProductDetails(cartItem['product_id'] as String),
+                        future: getProductDetails(cartItem['product_id'] as String),
                         builder: (context, productSnapshot) {
-                          if (productSnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                          if (productSnapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
                           } else if (productSnapshot.hasError) {
-                            return Text(
-                                'Error: ${productSnapshot.error.toString()}');
-                          } else if (!productSnapshot.hasData ||
-                              !productSnapshot.data!.exists) {
-                            return Text('Product not found');
+                            return Text('Error: ${productSnapshot.error.toString()}');
+                          } else if (!productSnapshot.hasData || !productSnapshot.data!.exists) {
+                            return const Text('Product not found');
                           } else {
                             final productData = productSnapshot.data!;
 
-                            final quantity =
-                                int.parse(cartItem['quantity'].toString());
+                            final quantity = int.parse(cartItem['quantity'].toString());
 
-                            final subtotal = quantity *
-                                double.parse(
-                                    productData['product_price'].toString());
+                            final subtotal =
+                                quantity * double.parse(productData['product_price'].toString());
 
                             grandTotal += subtotal;
 
@@ -137,8 +131,7 @@ class _CartPageState extends State<CartPage> {
 
                             if (existingProductIndex != -1) {
                               // If it exists, update the quantity
-                              productsToBuyList[existingProductIndex]
-                                      ['quantity'] =
+                              productsToBuyList[existingProductIndex]['quantity'] =
                                   double.parse(cartItem['quantity'].toString());
                             } else {
                               // If not, add a new entry
@@ -161,14 +154,13 @@ class _CartPageState extends State<CartPage> {
                             return SizedBox(
                               height: 100,
                               child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                leading: CircleAvatar(),
-                                title:
-                                    Text(productData['product_name'] as String),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                leading: const CircleAvatar(),
+                                title: Text(productData['product_name'] as String),
                                 subtitle: Text(
                                   subtotal.toString(),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -178,39 +170,33 @@ class _CartPageState extends State<CartPage> {
                                           setState(() {
                                             FirebaseFirestore.instance
                                                 .collection('CartCollection')
-                                                .doc(cartItem['cart_id']
-                                                    .toString())
-                                                .update({
-                                              'quantity': '${quantity + 1}'
-                                            });
+                                                .doc(cartItem['cart_id'].toString())
+                                                .update({'quantity': '${quantity + 1}'});
                                           });
                                         },
-                                        child: Icon((Icons.add))),
+                                        child: const Icon((Icons.add))),
                                     widthSpacer(10),
                                     Text('${cartItem['quantity']}'),
                                     widthSpacer(10),
                                     if (quantity > 1)
                                       InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              FirebaseFirestore.instance
-                                                  .collection('CartCollection')
-                                                  .doc(cartItem['cart_id']
-                                                      .toString())
-                                                  .update({
-                                                'quantity': '${quantity - 1}'
-                                              });
-                                            });
-                                          },
-                                          child: const Icon(Icons.remove))
+                                        onTap: () {
+                                          setState(() {
+                                            FirebaseFirestore.instance
+                                                .collection('CartCollection')
+                                                .doc(cartItem['cart_id'].toString())
+                                                .update({'quantity': '${quantity - 1}'});
+                                          });
+                                        },
+                                        child: const Icon(Icons.remove),
+                                      )
                                     else
                                       InkWell(
                                         onTap: () {
                                           setState(() {
                                             FirebaseFirestore.instance
                                                 .collection('CartCollection')
-                                                .doc(cartItem['cart_id']
-                                                    .toString())
+                                                .doc(cartItem['cart_id'].toString())
                                                 .delete();
                                           });
                                         },
@@ -229,44 +215,31 @@ class _CartPageState extends State<CartPage> {
 
                   //G
                   Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton.icon(
-                              onPressed: () async {
-                                //? Placing Order as pending status
-                                orderID = OrderRepo()
-                                    .placeOrder(userID, fullCartItems);
-                                final s = await orderID;
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () async {
+                            //? Placing Order as pending status
+                            orderID = OrderRepo().placeOrder(userID, fullCartItems);
+                            final s = await orderID;
 
-                                // await Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) => CheckoutPage(
-                                //         productsToBuy:
-                                //             productsToBuyList.toSet().toList(),
-                                //         grandTotal: grandTotal,
-                                //         orderID: s,
-                                //         fullCartItems: fullCartItems,
-                                //       ),
-                                //     ));
-
-                                await Get.to(
-                                  CheckoutPage(
-                                    productsToBuy:
-                                        productsToBuyList.toSet().toList(),
-                                    grandTotal: grandTotal,
-                                    orderID: s,
-                                    fullCartItems: fullCartItems,
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.arrow_forward),
-                              label: const Text('Checkout'))
-                        ],
-                      )),
+                            await Get.to(
+                              CheckoutPage(
+                                productsToBuy: productsToBuyList.toSet().toList(),
+                                grandTotal: grandTotal,
+                                orderID: s,
+                                fullCartItems: fullCartItems,
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_forward),
+                          label: const Text('Checkout'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             );
@@ -277,10 +250,8 @@ class _CartPageState extends State<CartPage> {
   }
 
   Future<DocumentSnapshot> getProductDetails(String productId) async {
-    final productDocument = await FirebaseFirestore.instance
-        .collection('ProductCollection')
-        .doc(productId)
-        .get();
+    final productDocument =
+        await FirebaseFirestore.instance.collection('ProductCollection').doc(productId).get();
     return productDocument;
   }
 }
