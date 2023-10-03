@@ -3,16 +3,11 @@ import 'package:ecommerce/cart_page/view/cart_page.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/product_details_page/view/product_details_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserDashboardPage extends StatelessWidget {
-  UserDashboardPage({super.key});
-
-  final _auth = FirebaseAuth.instance;
-  // final productsRef =
-  //     FirebaseFirestore.instance.collection('ProdcutsCollection');
+  const UserDashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +26,16 @@ class UserDashboardPage extends StatelessWidget {
           children: [
             heightSpacer(35),
             IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CartPage(),
-                      ));
-                },
-                icon: Icon(Icons.shopping_cart_checkout)),
+              onPressed: () {
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => CartPage(),
+                //     ));
+                Get.to(CartPage());
+              },
+              icon: const Icon(Icons.shopping_cart_checkout),
+            ),
             heightSpacer(20),
             Center(
               child: mainHeading('Browse'),
@@ -61,14 +58,19 @@ class UserDashboardPage extends StatelessWidget {
                           width: 150,
                           child: InkWell(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetailsPage(
-                                    productID: prod['product_id'] as String,
-                                  ),
+                              Get.to(
+                                ProductDetailsPage(
+                                  productID: prod['product_id'] as String,
                                 ),
                               );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => ProductDetailsPage(
+                              //       productID: prod['product_id'] as String,
+                              //     ),
+                              //   ),
+                              // );
                             },
                             child: Card(
                               child: Column(
@@ -83,7 +85,8 @@ class UserDashboardPage extends StatelessWidget {
                                   heightSpacer(10),
                                   Text(
                                     prod['product_name'] as String,
-                                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                                    style:
+                                        const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                                   ),
                                   Text('Rs. ${prod['product_price'] as String}'),
                                 ],
@@ -94,7 +97,7 @@ class UserDashboardPage extends StatelessWidget {
                       },
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                 },
               ),

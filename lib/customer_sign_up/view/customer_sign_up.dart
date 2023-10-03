@@ -21,7 +21,7 @@ class CustomerSignupPage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
         child: Form(
           key: _formKey,
           child: Column(
@@ -30,8 +30,8 @@ class CustomerSignupPage extends StatelessWidget {
               Column(
                 children: [
                   heightSpacer(70),
-                  mainHeading('Welcome, New Customer'),
-                  heightSpacer(40),
+                  mainHeading('Customer Sign Up'),
+                  heightSpacer(20),
                   TextFormField(
                     controller: _usernameController,
                     validator: (value) {
@@ -68,11 +68,7 @@ class CustomerSignupPage extends StatelessWidget {
                     },
                     decoration: const InputDecoration(hintText: 'Password'),
                   ),
-                  TextButton(
-                      onPressed: () {
-                        Get.to(CustomerLoginPage());
-                      },
-                      child: const Text('Already Have An Account? Click Here')),
+                  heightSpacer(20),
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -94,6 +90,12 @@ class CustomerSignupPage extends StatelessWidget {
                     },
                     child: const Text('Create Account'),
                   ),
+                  //
+                  TextButton(
+                      onPressed: () {
+                        Get.to(CustomerLoginPage());
+                      },
+                      child: const Text('Already Have An Account? Click Here')),
                 ],
               ),
               TextButton.icon(

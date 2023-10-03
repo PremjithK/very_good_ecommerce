@@ -27,7 +27,7 @@ class SellerLoginPage extends StatelessWidget {
               heightSpacer(60),
               Column(
                 children: [
-                  Text(
+                  const Text(
                     'Seller Login',
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
@@ -39,7 +39,7 @@ class SellerLoginPage extends StatelessWidget {
                         return 'Invalid Email';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Email'),
+                    decoration: const InputDecoration(hintText: 'Email'),
                   ),
                   TextFormField(
                     controller: _passwordController,
@@ -48,7 +48,7 @@ class SellerLoginPage extends StatelessWidget {
                         return 'Invalid Password';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Password'),
+                    decoration: const InputDecoration(hintText: 'Password'),
                   ),
                   ElevatedButton(
                       onPressed: () async {
@@ -61,16 +61,16 @@ class SellerLoginPage extends StatelessWidget {
                         if (result.docs.isNotEmpty) {
                           try {
                             final auth = FirebaseAuth.instance;
-                            final sellerRef =
-                                await auth.signInWithEmailAndPassword(
+                            await auth.signInWithEmailAndPassword(
                               email: _emailController.text,
                               password: _passwordController.text,
                             );
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DashboardPage(),
-                                ));
+                            await Get.to(DashboardPage());
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => DashboardPage(),
+                            //     ));
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -91,22 +91,24 @@ class SellerLoginPage extends StatelessWidget {
                       child: const Text('Log In')),
                   TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SellerSignupPage(),
-                          ),
-                        );
+                        Get.to(SellerSignupPage());
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => SellerSignupPage(),
+                        //   ),
+                        // );
                       },
-                      child: Text('Create An Account')),
+                      child: const Text('Create An Account')),
                 ],
               ),
               TextButton.icon(
-                  onPressed: () {
-                    Get.to(LaunchPage());
-                  },
-                  icon: Icon(Icons.arrow_back),
-                  label: Text('Go Back'))
+                onPressed: () {
+                  Get.to(LaunchPage());
+                },
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Go Back'),
+              )
             ],
           ),
         ),

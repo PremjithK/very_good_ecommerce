@@ -9,7 +9,7 @@ class ProductDetailsPage extends StatelessWidget {
   ProductDetailsPage({required this.productID, super.key});
   final String productID;
 
-  final user_id = FirebaseAuth.instance.currentUser!.uid;
+  final userID = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +19,20 @@ class ProductDetailsPage extends StatelessWidget {
       bottomNavigationBar: Row(
         children: [
           TextButton.icon(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back),
-              label: Text('Back')),
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+            label: const Text('Back'),
+          ),
           heightSpacer(10),
         ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('ProductCollection')
-            .doc(productID)
-            .get(),
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        future: FirebaseFirestore.instance.collection('ProductCollection').doc(productID).get(),
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasData) {
             final product = snapshot.data!;
             return Padding(
-              padding: EdgeInsets.all(30),
+              padding: const EdgeInsets.all(30),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +61,7 @@ class ProductDetailsPage extends StatelessWidget {
                         heightSpacer(20),
                         ElevatedButton.icon(
                             onPressed: () {
-                              CartRepo().addToCart(user_id, productID);
+                              CartRepo().addToCart(userID, productID);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('Item Added To Cart'),
@@ -72,8 +69,8 @@ class ProductDetailsPage extends StatelessWidget {
                                 ),
                               );
                             },
-                            icon: Icon(Icons.add),
-                            label: Text('Add To Cart')),
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add To Cart')),
                       ],
                     ),
                   ],
