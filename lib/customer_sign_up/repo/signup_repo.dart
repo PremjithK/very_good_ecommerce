@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class CustomerSignupRepo {
   Future<void> createUser(
@@ -10,8 +9,7 @@ class CustomerSignupRepo {
     String password,
   ) async {
     final auth = FirebaseAuth.instance;
-    final CollectionReference userRef =
-        FirebaseFirestore.instance.collection('CustomerCollection');
+    final CollectionReference userRef = FirebaseFirestore.instance.collection('CustomerCollection');
     try {
       final userCredential = await auth.createUserWithEmailAndPassword(
         email: email,

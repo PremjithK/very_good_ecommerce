@@ -45,14 +45,11 @@ class UserDashboardPage extends StatelessWidget {
             ),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('ProductCollection')
-                    .snapshots(),
+                stream: FirebaseFirestore.instance.collection('ProductCollection').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data!.docs.length,
@@ -86,12 +83,9 @@ class UserDashboardPage extends StatelessWidget {
                                   heightSpacer(10),
                                   Text(
                                     prod['product_name'] as String,
-                                    style: TextStyle(
-                                        fontSize: 21,
-                                        fontWeight: FontWeight.bold),
+                                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                                   ),
-                                  Text(
-                                      'Rs. ${prod['product_price'] as String}'),
+                                  Text('Rs. ${prod['product_price'] as String}'),
                                 ],
                               ),
                             ),

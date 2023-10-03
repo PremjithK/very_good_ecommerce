@@ -22,9 +22,10 @@ class SellerSignupPage extends StatelessWidget {
       bottomNavigationBar: Row(
         children: [
           TextButton.icon(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back),
-              label: Text('Back')),
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+            label: const Text('Back'),
+          ),
           heightSpacer(10),
         ],
       ),
@@ -48,7 +49,7 @@ class SellerSignupPage extends StatelessWidget {
                         return 'Enter an Username';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Merchant Name'),
+                    decoration: const InputDecoration(hintText: 'Merchant Name'),
                   ),
                   TextFormField(
                     controller: _emailController,
@@ -57,7 +58,7 @@ class SellerSignupPage extends StatelessWidget {
                         return 'Enter an Email';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Email'),
+                    decoration: const InputDecoration(hintText: 'Email'),
                   ),
                   TextFormField(
                     controller: _phoneController,
@@ -66,7 +67,7 @@ class SellerSignupPage extends StatelessWidget {
                         return 'Enter a Phone Number';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Phone No.'),
+                    decoration: const InputDecoration(hintText: 'Phone No.'),
                   ),
                   TextFormField(
                     controller: _passwordController,
@@ -75,13 +76,13 @@ class SellerSignupPage extends StatelessWidget {
                         return 'Enter an Password';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Password'),
+                    decoration: const InputDecoration(hintText: 'Password'),
                   ),
                   TextButton(
                       onPressed: () {
                         Get.to(SellerLoginPage());
                       },
-                      child: Text('Already Have An Account? Click Here')),
+                      child: const Text('Already Have An Account? Click Here')),
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -92,12 +93,14 @@ class SellerSignupPage extends StatelessWidget {
                             _phoneController.text,
                             _passwordController.text,
                           );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SellerLoginPage(),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => SellerLoginPage(),
+                          //   ),
+                          // );
+
+                          await Get.to(SellerLoginPage());
                         } else {
                           print('Seller with this email already exists');
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(

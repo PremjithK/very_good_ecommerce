@@ -120,7 +120,7 @@ class CartPageState extends State<CartPage> {
                             final cartItemID = cartItem['cart_id'].toString();
                             cartIDSet.add(cartItemID);
 
-                            //? Check if the product is already in productsToBuy
+                            //* Check if the product is already in productsToBuyList
                             var existingProductIndex = -1;
                             for (var i = 0; i < productsToBuyList.length; i++) {
                               if (productsToBuyList[i]['id'] == productId) {
@@ -213,8 +213,6 @@ class CartPageState extends State<CartPage> {
                       );
                     },
                   ),
-
-                  //G
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     child: Row(
@@ -222,9 +220,8 @@ class CartPageState extends State<CartPage> {
                       children: [
                         TextButton.icon(
                           onPressed: () async {
-                            //? Placing Order as pending status
-                            orderID = OrderRepo().placeOrder(userID, fullCartItems);
-                            final s = await orderID;
+                            //* Placing Order as pending status
+                            final s = await OrderRepo().placeOrder(userID, fullCartItems);
 
                             await Get.to(
                               CheckoutPage(

@@ -4,8 +4,6 @@ import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_login_page/view/login_page.dart';
 import 'package:ecommerce/customer_sign_up/repo/signup_repo.dart';
 import 'package:ecommerce/launch_page/view/launch_page.dart';
-import 'package:ecommerce/seller_login_page/view/seller_login_page.dart';
-import 'package:ecommerce/seller_sign_up_page/repo/signup_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,7 +39,7 @@ class CustomerSignupPage extends StatelessWidget {
                         return 'Enter an Username';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Username'),
+                    decoration: const InputDecoration(hintText: 'Username'),
                   ),
                   TextFormField(
                     controller: _emailController,
@@ -50,7 +48,7 @@ class CustomerSignupPage extends StatelessWidget {
                         return 'Enter an Email';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Email'),
+                    decoration: const InputDecoration(hintText: 'Email'),
                   ),
                   TextFormField(
                     controller: _phoneController,
@@ -59,7 +57,7 @@ class CustomerSignupPage extends StatelessWidget {
                         return 'Enter a Phone Number';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Phone No.'),
+                    decoration: const InputDecoration(hintText: 'Phone No.'),
                   ),
                   TextFormField(
                     controller: _passwordController,
@@ -68,13 +66,13 @@ class CustomerSignupPage extends StatelessWidget {
                         return 'Enter an Password';
                       }
                     },
-                    decoration: InputDecoration(hintText: 'Password'),
+                    decoration: const InputDecoration(hintText: 'Password'),
                   ),
                   TextButton(
                       onPressed: () {
                         Get.to(CustomerLoginPage());
                       },
-                      child: Text('Already Have An Account? Click Here')),
+                      child: const Text('Already Have An Account? Click Here')),
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -85,12 +83,8 @@ class CustomerSignupPage extends StatelessWidget {
                             _phoneController.text,
                             _passwordController.text,
                           );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CustomerLoginPage(),
-                            ),
-                          );
+
+                          await Get.to(CustomerLoginPage());
                         } else {
                           print('User with this email already exists');
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -106,8 +100,8 @@ class CustomerSignupPage extends StatelessWidget {
                 onPressed: () {
                   Get.to(LaunchPage());
                 },
-                icon: Icon(Icons.arrow_back),
-                label: Text('Go Back'),
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Go Back'),
               ),
             ],
           ),

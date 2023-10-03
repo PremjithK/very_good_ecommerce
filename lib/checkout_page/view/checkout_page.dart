@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_dashboard_page/customer_dashboard.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -49,11 +49,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         final snapshot = await _orderRef.doc(orderId).get();
 
+        //? Clearing Cart
         if (snapshot.exists) {
           final user = snapshot['user_id'] as String;
-          //print(user);
-          final cartDoc =
-              await _cartRef.where('user_id', isEqualTo: user).get();
+          final cartDoc = await _cartRef.where('user_id', isEqualTo: user).get();
           for (final doc in cartDoc.docs) {
             await doc.reference.delete();
           }
@@ -77,6 +76,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   //* Payment success event
+
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     Fluttertoast.showToast(
       backgroundColor: Colors.green.shade700,
@@ -84,29 +84,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
       toastLength: Toast.LENGTH_SHORT,
     );
 
-    //? Updating Order Statuses
-    //updateOrderStatus(_auth.currentUser!.uid, widget.cartIDs);
-
-    // print('>>>>>>>>>>>>>>>>>>$widget.orderID');
-    // updateProductQuantitiesAndSubtotal(
-    //   widget.orderID,
-    //   widget.fullCartItems,
-    // );
-
+    //? (1) Updating Order Statuses
     updateProductQuantitiesAndSubtotal(
       widget.orderID,
       widget.fullCartItems,
     );
 
-    //? Clearing Cart
-
-    //? Route back to user homepage
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserDashboardPage(),
-      ),
-    );
+    //? (2) Routing back to user homepage
+    Get.to(UserDashboardPage());
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => UserDashboardPage(),
+    //   ),
+    // );
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -158,34 +149,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  //? method for Updating Order Status And Clearing Cart
-  // Future<void> updateOrderStatus(
-  //   String userId,
-  //   List<String> cartIDs,
-  // ) async {
-  //   print('USER ID:  $userId <<<<<<<<<<<<<<<');
-  //   final orderRef = await FirebaseFirestore.instance
-  //       .collection('OrderCollection')
-  //       .where('item_ids', arrayContainsAny: cartIDs)
-  //       .get();
-  //   // Updating Order Status to confirmed
-  //   for (final doc in orderRef.docs) {
-  //     await doc.reference.update({
-  //       'status': 'confirmed',
-  //     });
-  //   }
-  //   // Clearing the user's cart
-  //   final querySnapshot =
-  //       await _cartRef.where('user_id', isEqualTo: userId).get();
-  //   for (final item in querySnapshot.docs) {
-  //     await item.reference.delete();
-  //   }
-  // }
-
-  // BUILD METHOD
+  // UI
   @override
   Widget build(BuildContext context) {
-    //
     return Scaffold(
       appBar: AppBar(
         title: const Text('Checkout From Cart'),
@@ -272,9 +238,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         itemCount: widget.productsToBuy.length,
                         itemBuilder: (BuildContext context, int index) {
                           final listItem = widget.productsToBuy[index];
-                          final subTotal =
-                              double.parse(listItem['price'].toString()) *
-                                  double.parse(listItem['quantity'].toString());
+                          final subTotal = double.parse(listItem['price'].toString()) *
+                              double.parse(listItem['quantity'].toString());
 
                           return ListTile(
                             contentPadding: EdgeInsets.all(0),

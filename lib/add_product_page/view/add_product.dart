@@ -10,12 +10,8 @@ class AddProductPage extends StatelessWidget {
   AddProductPage({super.key});
 
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _productNameController = TextEditingController();
-
-  final TextEditingController _productDetailsController =
-      TextEditingController();
-
+  final TextEditingController _productDetailsController = TextEditingController();
   final TextEditingController _productPriceController = TextEditingController();
 
   List<XFile>? productImages;
@@ -46,59 +42,60 @@ class AddProductPage extends StatelessWidget {
                   heightSpacer(20),
                   TextFormField(
                     controller: _productNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Product Name',
                     ),
                   ),
                   TextFormField(
                     maxLines: 2,
                     controller: _productDetailsController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'ProductDetails',
                     ),
                   ),
                   TextFormField(
                     controller: _productPriceController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Price',
                     ),
                   ),
                   heightSpacer(10),
                   TextButton(
-                      onPressed: pickImage,
-                      child: Text(
-                        'Upload Image',
-                        style: TextStyle(color: Colors.orange),
-                      )),
+                    onPressed: pickImage,
+                    child: const Text(
+                      'Upload Image',
+                      style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   // heightSpacer(10),
                   ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await AddProductRepo().createImageTask(
-                            _productNameController.text,
-                            _productDetailsController.text,
-                            _productPriceController.text,
-                            productImages!,
-                          );
-                          // clearing fields on submit
-                          _productNameController.clear();
-                          _productDetailsController.clear();
-                          _productPriceController.clear();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text('Product Added!')));
-                        }
-                      },
-                      child: Text('Add Product')),
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await AddProductRepo().createImageTask(
+                          _productNameController.text,
+                          _productDetailsController.text,
+                          _productPriceController.text,
+                          productImages!,
+                        );
+                        // clearing fields on submit
+                        _productNameController.clear();
+                        _productDetailsController.clear();
+                        _productPriceController.clear();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.green, content: Text('Product Added!')));
+                      }
+                    },
+                    child: const Text('Add Product'),
+                  ),
                 ],
               ),
-              heightSpacer(160),
+              heightSpacer(150),
               TextButton.icon(
                 onPressed: () {
                   Get.to(DashboardPage());
                 },
-                icon: Icon(Icons.arrow_back),
-                label: Text('Go Back'),
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Go Back'),
               ),
             ],
           ),
