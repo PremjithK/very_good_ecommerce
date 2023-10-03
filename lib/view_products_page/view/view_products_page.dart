@@ -29,7 +29,7 @@ class _ViewProductsPageState extends State<ViewProductsPage> {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -37,9 +37,8 @@ class _ViewProductsPageState extends State<ViewProductsPage> {
             mainHeading('My Products'),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: _productsRef
-                    .where('seller_id', isEqualTo: _auth.currentUser!.uid)
-                    .snapshots(),
+                stream:
+                    _productsRef.where('seller_id', isEqualTo: _auth.currentUser!.uid).snapshots(),
                 builder: (
                   BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot,
@@ -48,8 +47,7 @@ class _ViewProductsPageState extends State<ViewProductsPage> {
                   if (snapshot.hasData) {
                     return ListView.separated(
                       separatorBuilder: (context, index) => heightSpacer(10),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         final pro = products[index];
@@ -68,14 +66,12 @@ class _ViewProductsPageState extends State<ViewProductsPage> {
                           ),
                           title: Text(
                             pro['product_name'] as String,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
                               textAlign: TextAlign.start,
                               'SL.NO: ${pro['product_details'] as String}'),
-                          trailing:
-                              Text('Rs. ${pro['product_price'] as String}'),
+                          trailing: Text('Rs. ${pro['product_price'] as String}'),
                         );
                       },
                     );
