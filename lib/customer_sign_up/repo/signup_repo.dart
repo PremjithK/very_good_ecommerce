@@ -8,7 +8,6 @@ class CustomerSignupRepo {
     String email,
     String phoneNo,
     String password,
-    BuildContext context,
   ) async {
     final auth = FirebaseAuth.instance;
     final CollectionReference userRef =

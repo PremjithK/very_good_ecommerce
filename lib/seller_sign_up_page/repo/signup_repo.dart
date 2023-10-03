@@ -8,11 +8,9 @@ class SellerSignupRepo {
     String email,
     String phoneNo,
     String password,
-    BuildContext context,
   ) async {
     final auth = FirebaseAuth.instance;
-    final CollectionReference sellerRef =
-        FirebaseFirestore.instance.collection('SellerCollection');
+    final CollectionReference sellerRef = FirebaseFirestore.instance.collection('SellerCollection');
     try {
       final sellerCredential = await auth.createUserWithEmailAndPassword(
         email: email,

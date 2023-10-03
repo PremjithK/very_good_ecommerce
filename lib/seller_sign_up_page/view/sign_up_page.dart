@@ -91,7 +91,6 @@ class SellerSignupPage extends StatelessWidget {
                             _emailController.text,
                             _phoneController.text,
                             _passwordController.text,
-                            context,
                           );
                           Navigator.push(
                             context,

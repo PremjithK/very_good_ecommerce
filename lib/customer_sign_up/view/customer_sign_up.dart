@@ -21,8 +21,9 @@ class CustomerSignupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
@@ -83,7 +84,6 @@ class CustomerSignupPage extends StatelessWidget {
                             _emailController.text,
                             _phoneController.text,
                             _passwordController.text,
-                            context,
                           );
                           Navigator.push(
                             context,
