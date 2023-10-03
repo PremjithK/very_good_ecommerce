@@ -353,6 +353,7 @@ class _ConfirmedOrdersState extends State<ConfirmedOrders> {
                             return Text('Error: ${userSnapshot.error}');
                           } else {
                             final userName = userSnapshot.data?['name'] as String?;
+                            final userPhoneNum = userSnapshot.data?['phone'] as String?;
                             for (final pid in productIDMap.values) {
                               if (productData.containsKey(pid) &&
                                   productData[pid]['seller_id'] == sellerID) {
@@ -365,9 +366,10 @@ class _ConfirmedOrdersState extends State<ConfirmedOrders> {
                                     padding: EdgeInsets.all(10),
                                     color: Colors.grey.shade300,
                                     child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'User: ${userName ?? 'Unknown'}',
+                                          'User: ${userName},  Phone: ${userPhoneNum}',
                                           style:
                                               TextStyle(fontSize: 16), // Adjust font size as needed
                                         ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/seller_login_page/view/seller_login_page.dart';
@@ -84,19 +85,27 @@ class SellerSignupPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        await SellerSignupRepo().createUser(
-                          _usernameController.text,
-                          _emailController.text,
-                          _phoneController.text,
-                          _passwordController.text,
-                          context,
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SellerLoginPage(),
-                          ),
-                        );
+                        if (await checkIfEmailExists(_emailController.text, 'SellerCollection')) {
+                          await SellerSignupRepo().createUser(
+                            _usernameController.text,
+                            _emailController.text,
+                            _phoneController.text,
+                            _passwordController.text,
+                            context,
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SellerLoginPage(),
+                            ),
+                          );
+                        } else {
+                          print('Seller with this email already exists');
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('User with this email already exists'),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
                       }
                     },
                     child: const Text('Create Account'),
@@ -110,4 +119,14 @@ class SellerSignupPage extends StatelessWidget {
       ),
     );
   }
+}
+
+//
+Future<bool> checkIfEmailExists(String email, String collectionName) async {
+  final result = await FirebaseFirestore.instance
+      .collection(collectionName)
+      .where('email', isEqualTo: email)
+      .get();
+
+  return !result.docs.isNotEmpty;
 }

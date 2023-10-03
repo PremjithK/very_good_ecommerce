@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
 import 'package:ecommerce/customer_login_page/view/login_page.dart';
@@ -76,19 +77,25 @@ class CustomerSignupPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        await CustomerSignupRepo().createUser(
-                          _usernameController.text,
-                          _emailController.text,
-                          _phoneController.text,
-                          _passwordController.text,
-                          context,
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CustomerLoginPage(),
-                          ),
-                        );
+                        if (await checkIfEmailExists(_emailController.text, 'CustomerCollection')) {
+                          await CustomerSignupRepo().createUser(
+                            _usernameController.text,
+                            _emailController.text,
+                            _phoneController.text,
+                            _passwordController.text,
+                            context,
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CustomerLoginPage(),
+                            ),
+                          );
+                        } else {
+                          print('User with this email already exists');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('User with this email already exists')));
+                        }
                       }
                     },
                     child: const Text('Create Account'),
@@ -108,4 +115,13 @@ class CustomerSignupPage extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<bool> checkIfEmailExists(String email, String collectionName) async {
+  final result = await FirebaseFirestore.instance
+      .collection(collectionName)
+      .where('email', isEqualTo: email)
+      .get();
+
+  return !result.docs.isNotEmpty;
 }

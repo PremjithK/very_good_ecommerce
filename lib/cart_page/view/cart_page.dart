@@ -168,6 +168,7 @@ class CartPageState extends State<CartPage> {
                                     InkWell(
                                         onTap: () {
                                           setState(() {
+                                            //! check if qty > stock
                                             FirebaseFirestore.instance
                                                 .collection('CartCollection')
                                                 .doc(cartItem['cart_id'].toString())
