@@ -47,6 +47,7 @@ class UserDashboardPage extends StatelessWidget {
                   if (snapshot.hasData) {
                     return GridView.builder(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 0.9,
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data!.docs.length,
@@ -103,7 +104,9 @@ class UserDashboardPage extends StatelessWidget {
                                       ),
                                     )
                                   else
-                                    const SizedBox(),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
                                 ],
                               ),
                             ),

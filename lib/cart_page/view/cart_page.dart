@@ -262,7 +262,7 @@ class CartPageState extends State<CartPage> {
                             //* Placing Order as pending status
                             final s = await OrderRepo().placeOrder(userID, fullCartItems);
 
-                            await Get.to(
+                            await Get.off(
                               CheckoutPage(
                                 productsToBuy: productsToBuyList.toSet().toList(),
                                 grandTotal: grandTotal,
