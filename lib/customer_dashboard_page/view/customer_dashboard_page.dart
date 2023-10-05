@@ -51,18 +51,21 @@ class UserDashboardPage extends StatelessWidget {
                       ),
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (BuildContext context, int index) {
-                        DocumentSnapshot prod = snapshot.data!.docs[index];
-                        print(prod);
+                        final prod = snapshot.data!.docs[index];
+                        final stock = int.parse(snapshot.data!.docs[index]['stock'].toString());
+
                         return SizedBox(
                           height: 100,
                           width: 150,
                           child: InkWell(
                             onTap: () {
-                              Get.to(
-                                ProductDetailsPage(
-                                  productID: prod['product_id'] as String,
-                                ),
-                              );
+                              if (stock > 0) {
+                                Get.to(
+                                  ProductDetailsPage(
+                                    productID: prod['product_id'] as String,
+                                  ),
+                                );
+                              }
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
@@ -85,10 +88,22 @@ class UserDashboardPage extends StatelessWidget {
                                   heightSpacer(10),
                                   Text(
                                     prod['product_name'] as String,
-                                    style:
-                                        const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                      fontSize: 21,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   Text('Rs. ${prod['product_price'] as String}'),
+                                  if (stock < 1)
+                                    const Text(
+                                      'OUT OF STOCK',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red,
+                                      ),
+                                    )
+                                  else
+                                    const SizedBox(),
                                 ],
                               ),
                             ),

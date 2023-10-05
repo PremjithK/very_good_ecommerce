@@ -32,10 +32,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final _orderRef = FirebaseFirestore.instance.collection('OrderCollection');
 
   Future<void> updateProductQuantitiesAndSubtotal(
-      String orderId, List<Map<String, dynamic>> cartItems) async {
+    String orderId,
+    List<Map<String, dynamic>> cartItems,
+  ) async {
     try {
       for (final cartItem in cartItems) {
-        print('>>>>>>>>>${cartItem['quantity']}<<<<<<<<');
+        // print('>>>>>>>>>${cartItem['quantity']}<<<<<<<<');
         final productId = cartItem['product_id'] as String;
         final quantity = cartItem['quantity'];
         final subtotal = cartItem['subtotal'];
@@ -89,9 +91,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
       widget.orderID,
       widget.fullCartItems,
     );
+  //? (3) Reducing the stock based on quantity purchased
 
     //? (2) Routing back to user homepage
     Get.to(UserDashboardPage());
+
+
+  
     // Navigator.push(
     //   context,
     //   MaterialPageRoute(
@@ -137,9 +143,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
         'contact': '909090',
         'email': 'ecommerce@gmail.com',
         'external': {
-          'wallets': ['Paytm', 'Gpay']
-        }
-      }
+          'wallets': ['Paytm', 'Gpay'],
+        },
+      },
     };
 
     try {
@@ -177,55 +183,60 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ],
                     ),
                     ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 10,
-                            ),
-                            shape: StadiumBorder()),
-                        onPressed: () {
-                          //? Proceed To Payment Page
-                          //? Create Order Table and Set Order Status As Pending
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 10,
+                        ),
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () {
+                        //? Proceed To Payment Page
+                        //? Create Order Table and Set Order Status As Pending
 
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  icon: Column(
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              icon: Column(
                                 children: [
                                   mainHeading('Payment Method'),
                                   heightSpacer(10),
                                   SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: const StadiumBorder(),
-                                        ),
-                                        onPressed: () {},
-                                        child: Text('Cash On Delivery')),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const StadiumBorder(),
+                                      ),
+                                      onPressed: () {},
+                                      child: const Text('Cash On Delivery'),
+                                    ),
                                   ),
                                   SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: StadiumBorder(),
-                                          backgroundColor: Colors.indigo,
-                                        ),
-                                        onPressed: () {
-                                          //? MAKING THE PAYMENT
-                                          payment(widget.grandTotal);
-                                          // print(
-                                          //     '>>>>>>>>>>>>>>>>>>$widget.orderID');
-                                        },
-                                        child: Text('Razorpay')),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const StadiumBorder(),
+                                        backgroundColor: Colors.indigo,
+                                      ),
+                                      onPressed: () {
+                                        //? MAKING THE PAYMENT
+                                        payment(widget.grandTotal);
+                                        // print(
+                                        //     '>>>>>>>>>>>>>>>>>>$widget.orderID');
+                                      },
+                                      child: const Text('Razorpay'),
+                                    ),
                                   ),
                                 ],
-                              ));
-                            },
-                          );
-                        },
-                        icon: Icon(Icons.payment),
-                        label: Text('Pay'))
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.payment),
+                      label: const Text('Pay'),
+                    ),
                   ],
                 ),
                 heightSpacer(30),
@@ -242,8 +253,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               double.parse(listItem['quantity'].toString());
 
                           return ListTile(
-                            contentPadding: EdgeInsets.all(0),
-                            leading: CircleAvatar(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const CircleAvatar(
                               radius: 30,
                             ),
                             title: Text(listItem['name'].toString()),
@@ -265,4 +276,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
     );
   }
+}
+
+// Check if quantity exceeds each product's stock
+Future<void> checkStock(String productID, int quantity) async {
+  final products =
+      await FirebaseFirestore.instance.collection('ProductCollection').doc(productID).get();
+  final stock = int.parse(products['stock'].toString());
+  if (quantity > stock) print('Out of stock');
 }

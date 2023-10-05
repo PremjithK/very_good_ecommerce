@@ -115,9 +115,13 @@ class CartPageState extends State<CartPage> {
 
                             grandTotal += subtotal;
 
+                            // All fields
                             final productId = productData['product_id'];
+                            final productImage = productData['product_image'];
                             final productName = productData['product_name'];
+                            final productStock = int.parse(productData['stock'].toString());
                             final cartItemID = cartItem['cart_id'].toString();
+
                             cartIDSet.add(cartItemID);
 
                             //* Check if the product is already in productsToBuyList
@@ -156,8 +160,17 @@ class CartPageState extends State<CartPage> {
                               child: ListTile(
                                 contentPadding:
                                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                leading: const CircleAvatar(),
-                                title: Text(productData['product_name'] as String),
+                                leading: CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage: NetworkImage(productImage.toString()),
+                                ),
+                                title: Text(
+                                  productData['product_name'] as String,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
                                 subtitle: Text(
                                   subtotal.toString(),
                                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -166,16 +179,33 @@ class CartPageState extends State<CartPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            //! check if qty > stock
+                                      onTap: () {
+                                        setState(() {
+                                          //! check if qty > stock
+                                          if (quantity < productStock) {
                                             FirebaseFirestore.instance
                                                 .collection('CartCollection')
                                                 .doc(cartItem['cart_id'].toString())
                                                 .update({'quantity': '${quantity + 1}'});
-                                          });
-                                        },
-                                        child: const Icon((Icons.add))),
+                                          } else {
+                                            print('exceeding stock');
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                              duration: Duration(seconds: 1),
+                                              content: Text(
+                                                'Exeeding Stock',
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ));
+                                          }
+                                        });
+                                      },
+                                      child: const Icon(
+                                        Icons.add,
+                                        size: 30,
+                                      ),
+                                    ),
                                     widthSpacer(10),
                                     Text('${cartItem['quantity']}'),
                                     widthSpacer(10),
@@ -189,7 +219,10 @@ class CartPageState extends State<CartPage> {
                                                 .update({'quantity': '${quantity - 1}'});
                                           });
                                         },
-                                        child: const Icon(Icons.remove),
+                                        child: const Icon(
+                                          Icons.remove,
+                                          size: 30,
+                                        ),
                                       )
                                     else
                                       InkWell(
@@ -201,7 +234,10 @@ class CartPageState extends State<CartPage> {
                                                 .delete();
                                           });
                                         },
-                                        child: const Icon(Icons.delete_forever),
+                                        child: const Icon(
+                                          Icons.delete_forever,
+                                          size: 30,
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -214,7 +250,10 @@ class CartPageState extends State<CartPage> {
                     },
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
