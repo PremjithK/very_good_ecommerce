@@ -66,11 +66,6 @@ class SellerLoginPage extends StatelessWidget {
                               password: _passwordController.text,
                             );
                             await Get.to(DashboardPage());
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (context) => DashboardPage(),
-                            //     ));
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -92,12 +87,7 @@ class SellerLoginPage extends StatelessWidget {
                   TextButton(
                       onPressed: () {
                         Get.to(SellerSignupPage());
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => SellerSignupPage(),
-                        //   ),
-                        // );
+
                       },
                       child: const Text('Create An Account')),
                 ],

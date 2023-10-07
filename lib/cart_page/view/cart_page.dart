@@ -34,7 +34,6 @@ class CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    // Call a function to initialize the cartItemList
     initializeCartItems();
   }
 
@@ -73,7 +72,7 @@ class CartPageState extends State<CartPage> {
         title: const Text('Cart Page'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: getCartItems(),
+        future: getCartItems(), // IDs & QTY
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -82,7 +81,6 @@ class CartPageState extends State<CartPage> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No items in the cart.'));
           } else {
-            //
             final cartItems = snapshot.data;
 
             return SingleChildScrollView(
@@ -95,6 +93,11 @@ class CartPageState extends State<CartPage> {
                     itemCount: cartItems!.length,
                     itemBuilder: (context, index) {
                       final cartItem = cartItems[index];
+                      // qty = 1
+                      // cart_id
+                      // user_id
+                      // product_id
+
                       grandTotal = 0;
                       return FutureBuilder<DocumentSnapshot>(
                         future: getProductDetails(cartItem['product_id'] as String),
@@ -115,7 +118,7 @@ class CartPageState extends State<CartPage> {
 
                             grandTotal += subtotal;
 
-                            // All fields
+                            // All fields of Product Image
                             final productId = productData['product_id'];
                             final productImage = productData['product_image'];
                             final productName = productData['product_name'];
@@ -124,7 +127,7 @@ class CartPageState extends State<CartPage> {
 
                             cartIDSet.add(cartItemID);
 
-                            //* Check if the product is already in productsToBuyList
+                            // Check if the product is already in productsToBuyList
                             var existingProductIndex = -1;
                             for (var i = 0; i < productsToBuyList.length; i++) {
                               if (productsToBuyList[i]['id'] == productId) {
@@ -134,11 +137,10 @@ class CartPageState extends State<CartPage> {
                             }
 
                             if (existingProductIndex != -1) {
-                              // If it exists, update the quantity
+                              //! If it exists, update the quantity
                               productsToBuyList[existingProductIndex]['quantity'] =
                                   double.parse(cartItem['quantity'].toString());
                             } else {
-                              // If not, add a new entry
                               final oneProduct = {
                                 'id': productId,
                                 'name': productName,
@@ -241,7 +243,6 @@ class CartPageState extends State<CartPage> {
                                       ),
                                   ],
                                 ),
-                                // Add more product details as needed
                               ),
                             );
                           }
@@ -259,10 +260,10 @@ class CartPageState extends State<CartPage> {
                       children: [
                         TextButton.icon(
                           onPressed: () async {
-                            //* Placing Order as pending status
+                            // Placing Order as pending status
                             final s = await OrderRepo().placeOrder(userID, fullCartItems);
 
-                            await Get.off(
+                            await Get.to<Widget>(
                               CheckoutPage(
                                 productsToBuy: productsToBuyList.toSet().toList(),
                                 grandTotal: grandTotal,

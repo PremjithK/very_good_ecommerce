@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/cart_page/view/cart_page.dart';
 import 'package:ecommerce/custom_widgets/page_title.dart';
 import 'package:ecommerce/custom_widgets/spacer.dart';
+import 'package:ecommerce/launch_page/launch_page.dart';
 import 'package:ecommerce/product_details_page/view/product_details_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -120,6 +122,17 @@ class UserDashboardPage extends StatelessWidget {
                 },
               ),
             ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    await Get.to<Widget>(const LaunchPage());
+                  },
+                  child: const Text('Log Out'),
+                ),
+              ],
+            )
           ],
         ),
       ),

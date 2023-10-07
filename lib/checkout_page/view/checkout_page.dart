@@ -31,13 +31,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
   final _cartRef = FirebaseFirestore.instance.collection('CartCollection');
   final _orderRef = FirebaseFirestore.instance.collection('OrderCollection');
 
-  Future<void> updateProductQuantitiesAndSubtotal(
+  // Confirm order after payment
+  Future<void> confirmOrder(
     String orderId,
     List<Map<String, dynamic>> cartItems,
   ) async {
     try {
       for (final cartItem in cartItems) {
-        // print('>>>>>>>>>${cartItem['quantity']}<<<<<<<<');
         final productId = cartItem['product_id'] as String;
         final quantity = cartItem['quantity'];
         final subtotal = cartItem['subtotal'];
@@ -61,7 +61,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
         }
       }
     } catch (e) {
-      throw Exception('Failed to update product quantities and subtotal');
+      throw Exception('Failed to Confirm order');
+    } finally {}
+  }
+
+  // Decrease stock after purchase was succesful
+  Future<void> decrementStock(List<Map<String, dynamic>> cartItems) async {
+    final productRef = FirebaseFirestore.instance.collection('ProductCollection');
+
+    try {
+      for (final cartItem in cartItems) {
+        final productId = cartItem['product_id'] as String;
+        final quantity = cartItem['quantity'] as int;
+
+        // Retrieve the current stock of the product
+        await productRef.doc(productId).get().then((doc) {
+          // Update the 'stock' field in the 'ProductCollection'
+          doc.reference.update({'stock': FieldValue.increment(-quantity)});
+        });
+      }
+    } catch (e) {
+      throw Exception('Failed to decrement product stock: $e');
     }
   }
 
@@ -86,22 +106,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
 
     //? (1) Updating Order Statuses
-    updateProductQuantitiesAndSubtotal(
+    confirmOrder(
       widget.orderID,
       widget.fullCartItems,
     );
     //? (2) Reducing the stock based on quantity purchased
     //! Repeating issue
-    // decrementStock(widget.fullCartItems);
+
+    decrementStock(widget.fullCartItems);
 
     //? (2) Routing back to user homepage
-    Get.to(UserDashboardPage());
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => UserDashboardPage(),
-    //   ),
-    // );
+    Get.to<Widget>(const UserDashboardPage());
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -189,10 +204,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         shape: const StadiumBorder(),
                       ),
                       onPressed: () {
-                        //? Proceed To Payment Page
-                        //? Create Order Table and Set Order Status As Pending
-
-                        showDialog(
+                        // Shows dialog to pick payment method
+                        showDialog<Widget>(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
@@ -220,8 +233,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       onPressed: () {
                                         //? MAKING THE PAYMENT
                                         payment(widget.grandTotal);
-                                        // print(
-                                        //     '>>>>>>>>>>>>>>>>>>$widget.orderID');
                                       },
                                       child: const Text('Razorpay'),
                                     ),
@@ -275,340 +286,3 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 }
-
-// Check if quantity exceeds each product's stock
-Future<void> decrementStock(List<Map<String, dynamic>> cartItems) async {
-  final productRef = FirebaseFirestore.instance.collection('ProductCollection');
-  for (final item in cartItems) {
-    final productID = item['product_id'].toString();
-    print('>>>>>>>>>>>>>>>>>>>>>>>>> $item');
-
-    final qty = int.parse(item['quantity'].toString());
-    productRef.doc(productID);
-    final products = await productRef.doc(productID).get();
-    final stock = int.parse(products['stock'].toString());
-    final updatedStock = stock - qty;
-    print('Before updating stock $stock');
-    await productRef.doc(productID).update({
-      'stock': updatedStock.toString(),
-    });
-    print('AFTER UPDATING STOCK: $stock');
-  }
-}
-
-//! GPT method
-
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:ecommerce/custom_widgets/page_title.dart';
-// import 'package:ecommerce/custom_widgets/spacer.dart';
-// import 'package:ecommerce/customer_dashboard_page/customer_dashboard.dart';
-// import 'package:ecommerce/order_placed/view/order_placed.dart';
-// import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:get/get.dart';
-// import 'package:razorpay_flutter/razorpay_flutter.dart';
-
-// class CheckoutPage extends StatefulWidget {
-//   CheckoutPage({
-//     required this.productsToBuy,
-//     required this.grandTotal,
-//     required this.orderID,
-//     required this.fullCartItems,
-//     super.key,
-//   });
-
-//   final double grandTotal;
-//   final List<Map<String, dynamic>> productsToBuy;
-//   final String orderID;
-//   List<Map<String, dynamic>> fullCartItems;
-
-//   @override
-//   State<CheckoutPage> createState() => _CheckoutPageState();
-// }
-
-// class _CheckoutPageState extends State<CheckoutPage> {
-//   late Razorpay _razorpay;
-
-//   void _handlePaymentError(PaymentFailureResponse response) {
-//     Fluttertoast.showToast(
-//       backgroundColor: Colors.red,
-//       msg: 'Error: ${response.code}',
-//       toastLength: Toast.LENGTH_SHORT,
-//     );
-//   }
-
-//   void _handleExternalWallet(ExternalWalletResponse response) {
-//     Fluttertoast.showToast(
-//       msg: 'External Wallet: ${response.walletName}',
-//       toastLength: Toast.LENGTH_SHORT,
-//     );
-//   }
-
-//   Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
-//     await Fluttertoast.showToast(
-//       backgroundColor: Colors.green.shade700,
-//       msg: 'Payment Successful: ${response.paymentId}',
-//       toastLength: Toast.LENGTH_SHORT,
-//     );
-
-//     try {
-//       await updateProductQuantitiesAndSubtotal(
-//         widget.orderID,
-//         widget.fullCartItems,
-//       );
-
-//       await Get.to(UserDashboardPage());
-
-//       // Update product stock after order is successfully placed
-//       await updateProductStock(widget.fullCartItems);
-
-//       // Clear the cart after updating stock
-//       await clearCart(FirebaseAuth.instance.currentUser!.uid);
-//     } catch (e) {
-//       await Fluttertoast.showToast(
-//         backgroundColor: Colors.red,
-//         msg: 'Error: $e',
-//         toastLength: Toast.LENGTH_SHORT,
-//       );
-//     }
-//   }
-
-//   Future<void> updateProductStock(List<Map<String, dynamic>> cartItems) async {
-//     try {
-//       for (final cartItem in cartItems) {
-//         final productId = cartItem['product_id'] as String;
-//         final quantity = cartItem['quantity'] as int;
-
-//         final productDoc =
-//             await FirebaseFirestore.instance.collection('ProductCollection').doc(productId).get();
-
-//         if (productDoc.exists) {
-//           final currentStock = productDoc['stock'] as int;
-//           final newStock = currentStock - quantity;
-
-//           print('>>>>>>>>>>>>$currentStock<<<<< \n\n\n');
-
-//           await FirebaseFirestore.instance
-//               .collection('ProductCollection')
-//               .doc(productId)
-//               .update({'stock': newStock.toString()});
-//         }
-//       }
-//     } catch (e) {
-//       throw Exception('Failed to update product stock: $e');
-//     }
-//   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     _razorpay = Razorpay();
-
-//     _razorpay
-//       ..on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess)
-//       ..on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError)
-//       ..on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     _razorpay.clear();
-//   }
-
-//   Future<void> payment(double amount) async {
-//     final options = {
-//       'key': 'rzp_test_sU9tdJwIpbnAHy',
-//       'key_secret': 'dekVTnDDsu0sDonSh3y1DbWd',
-//       'amount': amount * 100,
-//       'name': 'E-Commerce',
-//       'description': 'E commerce Cart Total',
-//       'retry': {
-//         'enabled': true,
-//         'max_count': 1,
-//       },
-//       'send_sms_hash': true,
-//       'prefil': {
-//         'contact': '909090',
-//         'email': 'ecommerce@gmail.com',
-//         'external': {
-//           'wallets': ['Paytm', 'Gpay'],
-//         },
-//       },
-//     };
-
-//     try {
-//       _razorpay.open(options);
-//     } catch (e) {
-//       debugPrint('Error: $e');
-//     }
-//   }
-
-//   // Update product quantities and subtotals
-//   Future<void> updateProductQuantitiesAndSubtotal(
-//     String orderId,
-//     List<Map<String, dynamic>> cartItems,
-//   ) async {
-//     try {
-//       for (final cartItem in cartItems) {
-//         final productId = cartItem['product_id'] as String;
-//         final quantity = cartItem['quantity'];
-//         final subtotal = cartItem['subtotal'];
-
-//         await FirebaseFirestore.instance.collection('OrderCollection').doc(orderId).update({
-//           'quantity.$productId': quantity,
-//           'subtotal.$productId': subtotal,
-//           'product_ids.$productId': productId,
-//           'status': 'confirmed',
-//         });
-
-//         final snapshot =
-//             await FirebaseFirestore.instance.collection('OrderCollection').doc(orderId).get();
-
-//         if (snapshot.exists) {
-//           final user = snapshot['user_id'] as String;
-//           final cartDoc = await FirebaseFirestore.instance
-//               .collection('CartCollection')
-//               .where('user_id', isEqualTo: user)
-//               .get();
-//           for (final doc in cartDoc.docs) {
-//             await doc.reference.delete();
-//           }
-//         }
-//       }
-//     } catch (e) {
-//       throw Exception('Failed to update product quantities and subtotal');
-//     }
-//   }
-
-//   Future<void> clearCart(String user) async {
-//     try {
-//       final cartDocs = await FirebaseFirestore.instance
-//           .collection('CartCollection')
-//           .where('user_id', isEqualTo: user)
-//           .get();
-//       for (final doc in cartDocs.docs) {
-//         await doc.reference.delete();
-//       }
-//     } catch (e) {
-//       throw Exception('Failed to clear cart: $e');
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Checkout From Cart'),
-//         backgroundColor: Colors.pink.shade300,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-//         child: SingleChildScrollView(
-//           child: Padding(
-//             padding: const EdgeInsets.all(10),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   crossAxisAlignment: CrossAxisAlignment.end,
-//                   children: [
-//                     Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         const Text('GRAND TOTAL'),
-//                         mainHeading('₹ ${widget.grandTotal}'),
-//                       ],
-//                     ),
-//                     ElevatedButton.icon(
-//                       style: ElevatedButton.styleFrom(
-//                         padding: const EdgeInsets.symmetric(
-//                           horizontal: 30,
-//                           vertical: 10,
-//                         ),
-//                         shape: const StadiumBorder(),
-//                       ),
-//                       onPressed: () {
-//                         showDialog(
-//                           context: context,
-//                           builder: (BuildContext context) {
-//                             return AlertDialog(
-//                               icon: Column(
-//                                 children: [
-//                                   mainHeading('Payment Method'),
-//                                   heightSpacer(10),
-//                                   SizedBox(
-//                                     width: double.infinity,
-//                                     child: ElevatedButton(
-//                                       style: ElevatedButton.styleFrom(
-//                                         shape: const StadiumBorder(),
-//                                       ),
-//                                       onPressed: () {},
-//                                       child: const Text('Cash On Delivery'),
-//                                     ),
-//                                   ),
-//                                   SizedBox(
-//                                     width: double.infinity,
-//                                     child: ElevatedButton(
-//                                       style: ElevatedButton.styleFrom(
-//                                         shape: const StadiumBorder(),
-//                                         backgroundColor: Colors.indigo,
-//                                       ),
-//                                       onPressed: () {
-//                                         payment(widget.grandTotal);
-//                                       },
-//                                       child: const Text('Razorpay'),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             );
-//                           },
-//                         );
-//                       },
-//                       icon: const Icon(Icons.payment),
-//                       label: const Text('Pay'),
-//                     ),
-//                   ],
-//                 ),
-//                 heightSpacer(30),
-//                 SingleChildScrollView(
-//                   child: Column(
-//                     children: [
-//                       ListView.builder(
-//                         shrinkWrap: true,
-//                         physics: const NeverScrollableScrollPhysics(),
-//                         itemCount: widget.productsToBuy.length,
-//                         itemBuilder: (BuildContext context, int index) {
-//                           final listItem = widget.productsToBuy[index];
-//                           final subTotal = double.parse(listItem['price'].toString()) *
-//                               double.parse(listItem['quantity'].toString());
-
-//                           return ListTile(
-//                             contentPadding: EdgeInsets.zero,
-//                             leading: const CircleAvatar(
-//                               radius: 30,
-//                             ),
-//                             title: Text(listItem['name'].toString()),
-//                             subtitle: Text(subTotal.toString()),
-//                             trailing: Text(
-//                               'x ${listItem['quantity']}',
-//                             ),
-//                           );
-//                         },
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 heightSpacer(20),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

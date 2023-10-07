@@ -14,9 +14,6 @@ class CustomerLoginPage extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  //
-  final userType = 'customer';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,8 +22,8 @@ class CustomerLoginPage extends StatelessWidget {
         children: [
           TextButton.icon(
               onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back),
-              label: Text('Back')),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back')),
           heightSpacer(10),
         ],
       ),
@@ -45,7 +42,7 @@ class CustomerLoginPage extends StatelessWidget {
                     return 'Invalid Email';
                   }
                 },
-                decoration: InputDecoration(hintText: 'Email'),
+                decoration: const InputDecoration(hintText: 'Email'),
               ),
               TextFormField(
                 controller: _passwordController,
@@ -54,7 +51,7 @@ class CustomerLoginPage extends StatelessWidget {
                     return 'Invalid Password';
                   }
                 },
-                decoration: InputDecoration(hintText: 'Password'),
+                decoration: const InputDecoration(hintText: 'Password'),
               ),
               ElevatedButton(
                   onPressed: () async {
@@ -70,7 +67,7 @@ class CustomerLoginPage extends StatelessWidget {
                           email: _emailController.text,
                           password: _passwordController.text,
                         );
-                        Get.to(UserDashboardPage());
+                        await Get.to(UserDashboardPage());
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -90,10 +87,11 @@ class CustomerLoginPage extends StatelessWidget {
                   },
                   child: const Text('Log In')),
               TextButton(
-                  onPressed: () {
-                    Get.to(CustomerSignupPage());
-                  },
-                  child: Text('Create An Account')),
+                onPressed: () {
+                  Get.to(CustomerSignupPage());
+                },
+                child: const Text('Create An Account'),
+              ),
             ],
           ),
         ),

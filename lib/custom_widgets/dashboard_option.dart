@@ -8,12 +8,12 @@ Widget dashboardItem(
   Widget destination,
 ) {
   return ListTile(
-    shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20))),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
     onTap: () {
-      Get.to(destination);
+      Get.to<Widget>(destination);
     },
     leading: CircleAvatar(
+      radius: 21,
       backgroundColor: color,
       foregroundColor: Colors.white,
       child: Icon(icon),
