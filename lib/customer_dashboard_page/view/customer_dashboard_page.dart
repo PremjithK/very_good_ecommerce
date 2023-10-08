@@ -14,12 +14,7 @@ class UserDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Colors.blue,
-      //   title: Text(
-      //     'Welcome Customer',
-      //   ),
-      // ),
+      backgroundColor: Colors.grey.shade200,
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -49,7 +44,7 @@ class UserDashboardPage extends StatelessWidget {
                   if (snapshot.hasData) {
                     return GridView.builder(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 0.85,
                         crossAxisCount: 2,
                       ),
                       itemCount: snapshot.data!.docs.length,
@@ -79,37 +74,42 @@ class UserDashboardPage extends StatelessWidget {
                               // );
                             },
                             child: Card(
-                              child: Column(
-                                children: [
-                                  heightSpacer(10),
-                                  Image.network(
-                                    prod['product_image'][0] as String,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  heightSpacer(10),
-                                  Text(
-                                    prod['product_name'] as String,
-                                    style: const TextStyle(
-                                      fontSize: 21,
-                                      fontWeight: FontWeight.bold,
+                              child: Center(
+                                child: Column(
+                                  children: [
+                                    heightSpacer(10),
+                                    Image.network(
+                                      prod['product_image'][0] as String,
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.contain,
                                     ),
-                                  ),
-                                  Text('Rs. ${prod['product_price'] as String}'),
-                                  if (stock < 1)
-                                    const Text(
-                                      'OUT OF STOCK',
-                                      style: TextStyle(
+                                    heightSpacer(10),
+                                    Text(
+                                      prod['product_name'] as String,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        height: 1,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.red,
                                       ),
-                                    )
-                                  else
-                                    const SizedBox(
-                                      height: 20,
                                     ),
-                                ],
+                                    heightSpacer(5),
+                                    Text('Rs. ${prod['product_price'] as String}'),
+                                    if (stock < 1)
+                                      const Text(
+                                        'OUT OF STOCK',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    else
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -124,12 +124,13 @@ class UserDashboardPage extends StatelessWidget {
             ),
             Row(
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.logout),
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     await Get.to<Widget>(const LaunchPage());
                   },
-                  child: const Text('Log Out'),
+                  label: const Text('Log Out'),
                 ),
               ],
             )

@@ -2,23 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 class CartRepo {
-  final CollectionReference _cartRef = FirebaseFirestore.instance.collection('CartCollection');
-
-  Future<void> addToCart(
-    String userID,
-    String productID,
-  ) async {
-    const uuid = Uuid();
-    final cartID = uuid.v4();
+  Future<void> addToCart(String userID, String productID) async {
     const quantity = 1;
 
     try {
-      await _cartRef.doc(cartID).set({
-        'user_id': userID,
-        'product_id': productID,
-        'cart_id': cartID,
-        'quantity': quantity.toString(),
-      });
+      final cartDoc = await FirebaseFirestore.instance
+          .collection('CartCollection')
+          .where('product_id', isEqualTo: productID)
+          .get();
+
+      if (cartDoc.docs.isEmpty) {
+        const uuid = Uuid();
+        final cartID = uuid.v4();
+        await FirebaseFirestore.instance.collection('CartCollection').doc(cartID).set({
+          'cart_id': cartID,
+          'product_id': productID,
+          'quantity': quantity,
+          'user_id': userID,
+        });
+      } else {
+        throw Exception('AlreadyAddedToCart');
+      }
     } catch (e) {
       throw Exception('Failed to add to cart');
     }

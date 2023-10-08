@@ -47,7 +47,7 @@ class _ConfirmedOrdersState extends State<ConfirmedOrders> {
                     } else if (productSnapshot.hasError) {
                       return Text('Error: ${productSnapshot.error}');
                     } else if (!productSnapshot.hasData || productSnapshot.data!.isEmpty) {
-                      return const Text('No Products Found');
+                      return const Center(child: Text('No Products Found'));
                     } else {
                       final List<Widget> productWidgets = [];
                       final productData = productSnapshot.data as Map<String, dynamic>;
@@ -107,8 +107,9 @@ class _ConfirmedOrdersState extends State<ConfirmedOrders> {
                 );
               },
             );
+          } else {
+            return const Center(child: Text('No Order Data'));
           }
-          return const Center(child: Text('No Order Data'));
         },
       ),
     );

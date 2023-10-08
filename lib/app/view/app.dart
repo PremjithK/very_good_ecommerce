@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:ecommerce/l10n/l10n.dart';
 import 'package:ecommerce/launch_page/view/launch_page.dart';
 //import 'package:ecommerce/splash_screen/view/splash_screen.dart';
@@ -13,9 +15,19 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'PlusJakarta',
-        appBarTheme: const AppBarTheme(color: Colors.orangeAccent),
+        appBarTheme: const AppBarTheme(
+          color: Colors.purple,
+          titleTextStyle: TextStyle(
+            fontFamily: 'PlusJakarta',
+            fontSize: 20,
+            letterSpacing: 0.25,
+            fontVariations: [
+              FontVariation('wght', 800),
+            ],
+          ),
+        ),
         colorScheme: ColorScheme.fromSwatch(
-          accentColor: Colors.orangeAccent,
+          accentColor: Colors.purple,
         ),
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,

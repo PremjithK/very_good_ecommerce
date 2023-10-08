@@ -111,8 +111,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
       widget.fullCartItems,
     );
     //? (2) Reducing the stock based on quantity purchased
-    //! Repeating issue
-
     decrementStock(widget.fullCartItems);
 
     //? (2) Routing back to user homepage

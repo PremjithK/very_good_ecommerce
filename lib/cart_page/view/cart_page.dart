@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce/cart_page/repo/cart_repo.dart';
 import 'package:ecommerce/checkout_page/view/checkout_page.dart';
@@ -124,7 +126,7 @@ class CartPageState extends State<CartPage> {
                             final productName = productData['product_name'];
                             final productStock = int.parse(productData['stock'].toString());
                             final cartItemID = cartItem['cart_id'].toString();
-
+                            print('$quantity vs $productStock');
                             cartIDSet.add(cartItemID);
 
                             // Check if the product is already in productsToBuyList
@@ -157,6 +159,9 @@ class CartPageState extends State<CartPage> {
                               'subtotal': subtotal,
                             });
 
+                            //
+                            final cartRef = FirebaseFirestore.instance.collection('CartCollection');
+
                             return SizedBox(
                               height: 100,
                               child: ListTile(
@@ -174,21 +179,20 @@ class CartPageState extends State<CartPage> {
                                   ),
                                 ),
                                 subtitle: Text(
-                                  subtotal.toString(),
+                                  'Rs. $subtotal',
                                   style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     InkWell(
-                                      onTap: () {
+                                      onTap: () async {
                                         setState(() {
                                           //! check if qty > stock
                                           if (quantity < productStock) {
-                                            FirebaseFirestore.instance
-                                                .collection('CartCollection')
-                                                .doc(cartItem['cart_id'].toString())
-                                                .update({'quantity': '${quantity + 1}'});
+                                            cartRef.doc(cartItem['cart_id'].toString()).update({
+                                              'quantity': quantity + 1,
+                                            });
                                           } else {
                                             print('exceeding stock');
                                             ScaffoldMessenger.of(context)
@@ -209,7 +213,15 @@ class CartPageState extends State<CartPage> {
                                       ),
                                     ),
                                     widthSpacer(10),
-                                    Text('${cartItem['quantity']}'),
+                                    Text(
+                                      '${cartItem['quantity']}',
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontVariations: [
+                                          FontVariation('wght', 600),
+                                        ],
+                                      ),
+                                    ),
                                     widthSpacer(10),
                                     if (quantity > 1)
                                       InkWell(
@@ -217,8 +229,8 @@ class CartPageState extends State<CartPage> {
                                           setState(() {
                                             FirebaseFirestore.instance
                                                 .collection('CartCollection')
-                                                .doc(cartItem['cart_id'].toString())
-                                                .update({'quantity': '${quantity - 1}'});
+                                                .doc(cartItemID)
+                                                .update({'quantity': quantity - 1});
                                           });
                                         },
                                         child: const Icon(
@@ -232,7 +244,7 @@ class CartPageState extends State<CartPage> {
                                           setState(() {
                                             FirebaseFirestore.instance
                                                 .collection('CartCollection')
-                                                .doc(cartItem['cart_id'].toString())
+                                                .doc(cartItemID)
                                                 .delete();
                                           });
                                         },
@@ -253,10 +265,9 @@ class CartPageState extends State<CartPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
-                      vertical: 20,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextButton.icon(
                           onPressed: () async {
